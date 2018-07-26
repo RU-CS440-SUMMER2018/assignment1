@@ -7,7 +7,14 @@ data = 'this is fun!'
 size = len(data)
 
 s = socket.socket()
-s.connect(('localhost', port))
+
+while True:
+    try:
+        s.connect(('localhost', port))
+        break
+    except ConnectionRefusedError:
+        print('Error connecting to socket, trying again...')
+
 s.send(socket.htonl(size).to_bytes(4, sys.byteorder))
 print(s.recv(10).decode())
 
