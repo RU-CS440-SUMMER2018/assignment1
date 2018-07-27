@@ -62,7 +62,7 @@ int main () {
             read(new_socket, &tuple.second, 4);
             tuple.first = ntohl(tuple.first);
             tuple.second = ntohl(tuple.second);
-            printf("index %d: (%d, %d)\n", i, tuple.first, tuple.second);
+            path.push_back(tuple);
         }
 
         wait(NULL);
