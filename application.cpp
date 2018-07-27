@@ -30,6 +30,18 @@
 
 #include <iostream>
 
+// Includes for python-io
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <linux/limits.h>
+#include <vector>
+#include <utility>
+
 PLUGINLIB_EXPORT_CLASS(prx::util::util_application_t, prx::util::util_application_t)
 
 namespace prx
