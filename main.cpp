@@ -6,47 +6,44 @@
 #include <string.h>
 #include <sys/wait.h>
 
-#define PORT 8080
-
 using namespace std;
 
 int main () {
+
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = 0;
+    
+    // Creating socket file descriptor
+    if (!(server_fd = socket(AF_INET, SOCK_STREAM, 0))) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+    
+    // Bind socket to random port
+    if (bind(server_fd, (struct sockaddr *) &address, addrlen)) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Save randomly selected port
+    if (getsockname(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) {
+        perror("error saving port");
+        exit(EXIT_FAILURE);
+    }
+    int port = ntohs(address.sin_port);
     
     if(fork()) {
-
-        int server_fd, new_socket;
-        struct sockaddr_in address;
-        int opt = 1;
-        int addrlen = sizeof(address);
-        
-        // Creating socket file descriptor
-        if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-            perror("socket failed");
-            exit(EXIT_FAILURE);
-        }
-        
-        // Forcefully attaching socket to the port 8080
-        if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-            perror("setsockopt");
-            exit(EXIT_FAILURE);
-        }
-
-        address.sin_family = AF_INET;
-        address.sin_addr.s_addr = INADDR_ANY;
-        address.sin_port = htons( PORT );
-        
-        // Forcefully attaching socket to the port 8080
-        if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
-            perror("bind failed");
-            exit(EXIT_FAILURE);
-        }
 
         if (listen(server_fd, 1) < 0) {
             perror("listen");
             exit(EXIT_FAILURE);
         }
         
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
+        if ((new_socket = accept(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) < 0) {
             perror("accept");
             exit(EXIT_FAILURE);
         }
@@ -62,7 +59,7 @@ int main () {
 
     } else {
         char program[30];
-        sprintf(program, "python3 main.py %d", PORT);
+        sprintf(program, "python3 main.py %d", port);
         system(program);
     }
     
