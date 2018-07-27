@@ -39,12 +39,12 @@ int main () {
     if(fork()) {
 
         if (listen(server_fd, 1) < 0) {
-            perror("listen");
+            perror("listen error");
             exit(EXIT_FAILURE);
         }
         
         if ((new_socket = accept(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) < 0) {
-            perror("accept");
+            perror("accept error");
             exit(EXIT_FAILURE);
         }
 
