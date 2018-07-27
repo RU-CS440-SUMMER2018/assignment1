@@ -19,19 +19,19 @@ int main () {
     
     // Creating socket file descriptor
     if (!(server_fd = socket(AF_INET, SOCK_STREAM, 0))) {
-        perror("socket failed");
+        perror("error creating socket");
         exit(EXIT_FAILURE);
     }
     
     // Bind socket to random port
     if (bind(server_fd, (struct sockaddr *) &address, addrlen)) {
-        perror("bind failed");
+        perror("error binding to random port");
         exit(EXIT_FAILURE);
     }
 
     // Save randomly selected port
     if (getsockname(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) {
-        perror("error saving port");
+        perror("error saving random port");
         exit(EXIT_FAILURE);
     }
     int port = ntohs(address.sin_port);
@@ -39,12 +39,12 @@ int main () {
     if(fork()) {
 
         if (listen(server_fd, 1) < 0) {
-            perror("listen error");
+            perror("error listening to port");
             exit(EXIT_FAILURE);
         }
         
         if ((new_socket = accept(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) < 0) {
-            perror("accept error");
+            perror("error accepting connection");
             exit(EXIT_FAILURE);
         }
 
