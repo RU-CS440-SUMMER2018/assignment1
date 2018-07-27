@@ -58,9 +58,9 @@ int main () {
         wait(NULL);
 
     } else {
-        char program[30];
-        sprintf(program, "python3 main.py %d", port);
-        system(program);
+        char portStr[10];
+        sprintf(portStr, "%d", port);
+        execl("/usr/bin/python3", "python3", "main.py", portStr, NULL);
     }
     
     return 0;
