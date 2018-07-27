@@ -6,8 +6,8 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <linux/limits.h>
-
-using namespace std;
+#include <vector>
+#include <utility>
 
 int main () {
 
@@ -39,25 +39,35 @@ int main () {
     
     if(fork()) {
 
+        // Listen and accept on socket
         if (listen(server_fd, 1) < 0) {
             perror("error listening to port");
             exit(EXIT_FAILURE);
-        }
-        
+        }  
         if ((new_socket = accept(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) < 0) {
             perror("error accepting connection");
             exit(EXIT_FAILURE);
         }
 
-        unsigned int size;
-        read(new_socket, &size, 4);
-        size = ntohl(size);
-        printf("size %d\n", size);
-        send(new_socket, "hello back", 10, 0);
-        printf("Hello message sent\n");
+        // Get number of pairs
+        unsigned int numPairs;
+        read(new_socket, &numPairs, 4);
+        numPairs = ntohl(numPairs);
+        std::vector< std::pair<int,int> > path;
+
+        // Fill path vector
+        for (unsigned int i = 0; i < numPairs; i++) {
+            std::pair<int,int> tuple;
+            read(new_socket, &tuple.first, 4);
+            read(new_socket, &tuple.second, 4);
+            tuple.first = ntohl(tuple.first);
+            tuple.second = ntohl(tuple.second);
+            printf("index %d: (%d, %d)\n", i, tuple.first, tuple.second);
+        }
 
         wait(NULL);
 
+    // Run python script
     } else {
         char mainPyPath[PATH_MAX];
         sprintf(mainPyPath, "%s/python/cpp-io.py", getenv("PRACSYS_PATH"));

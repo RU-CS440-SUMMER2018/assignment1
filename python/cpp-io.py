@@ -3,19 +3,22 @@ import sys
 
 port = int(sys.argv[1])
 
-data = 'this is fun!'
-size = len(data)
+# vector is a list of tuples
+def sendVector(vector: list):
+    
+    # Connect to the socket
+    s = socket.socket()
+    while True:
+        try:
+            s.connect(('localhost', port))
+            break
+        except ConnectionRefusedError:
+            print('Error connecting to socket, trying again...')
 
-s = socket.socket()
+    numPairs = len(vector)
+    s.send(socket.htonl(numPairs).to_bytes(4, sys.byteorder))
 
-while True:
-    try:
-        s.connect(('localhost', port))
-        break
-    except ConnectionRefusedError:
-        print('Error connecting to socket, trying again...')
+    for pair in vector:
+        s.send(socket.htonl(pair[0]).to_bytes(4, sys.byteorder))
+        s.send(socket.htonl(pair[1]).to_bytes(4, sys.byteorder))
 
-s.send(socket.htonl(size).to_bytes(4, sys.byteorder))
-print(s.recv(10).decode())
-
-exit(0)
