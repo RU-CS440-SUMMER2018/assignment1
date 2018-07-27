@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <linux/limits.h>
 
 using namespace std;
 
@@ -58,9 +59,11 @@ int main () {
         wait(NULL);
 
     } else {
+        char mainPyPath[PATH_MAX];
+        sprintf(mainPyPath, "%s/python/cpp-io.py", getenv("PRACSYS_PATH"));
         char portStr[10];
         sprintf(portStr, "%d", port);
-        execl("/usr/bin/python3", "python3", "main.py", portStr, NULL);
+        execl("/usr/bin/python3", "python3", mainPyPath, portStr, NULL);
     }
     
     return 0;
