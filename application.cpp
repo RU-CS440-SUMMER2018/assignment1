@@ -308,47 +308,99 @@ namespace prx
             }
         }
 
-        std::vector< std::pair<int, int> > util_application_t::plan(int initial_i, int initial_j, int goal_i, int goal_j )
-        {
-            //Input: initial coordinates in maze 2D array: (initial_i, initial_j)
-            //       goal coordinates in maze 2D array: (goal_i, goal_j)
-            //Return value is a sequence of maze coordinates starting at the initial coordinate and ending at the goal.
+        std::vector< std::pair<int, int> > util_application_t::plan(int initial_i, int initial_j, int goal_i, int goal_j ) {
 
-            //Returned vector of coordinates.
-            std::vector< std::pair<int, int> > path;
+            std::vector< std::pair<int,int> > path;
+
+            int server_fd, new_socket;
+            struct sockaddr_in address;
+            int addrlen = sizeof(address);
+            address.sin_family = AF_INET;
+            address.sin_addr.s_addr = INADDR_ANY;
+            address.sin_port = 0;
             
+            // Creating socket file descriptor
+            if (!(server_fd = socket(AF_INET, SOCK_STREAM, 0))) {
+                perror("error creating socket");
+                exit(EXIT_FAILURE);
+            }
+            
+            // Bind socket to random port
+            if (bind(server_fd, (struct sockaddr *) &address, addrlen)) {
+                perror("error binding to random port");
+                exit(EXIT_FAILURE);
+            }
 
-            // Naive generation of path that has not awareness of the environment
-            //################COMMENT OUT THE FOLLOWING BLOCK OF CODE TO POPULATE path##################
-            for(int i=initial_i; i<=goal_i; ++i)                                      //################
-                path.push_back(std::make_pair(i,initial_j));                          //################            
-            for(int i=initial_i; i>=goal_i; --i)                                      //################
-                path.push_back(std::make_pair(i,initial_j));                          //################            
-            for(int j=initial_j+1; j<=goal_j; ++j)                                    //################
-                path.push_back(std::make_pair(goal_i,j));                             //################        
-            for(int j=initial_j-1; j>=goal_j; --j)                                    //################
-                path.push_back(std::make_pair(goal_i,j));                             //################ 
-            //If using C++, you can choose to populate the following function in search.cpp 
-            //path = searcher->search();           
-            //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################
+            // Save randomly selected port
+            if (getsockname(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) {
+                perror("error saving random port");
+                exit(EXIT_FAILURE);
+            }
+            int port = ntohs(address.sin_port);
+            
+            if(fork()) {
 
-            //You can invoke your code using an std::system call, or write your code in C++ and include it here, or invoke your code through ROS
-            //Global variable environment_file has the path to the maze file
-            //###############################################################
-            //###############################################################
-            //###############################################################
-            //###############################################################
-            //#########################ASSIGNMENT 1##########################
-            //###############################################################
-            //###############################################################
-            //###############################################################
-            //###############################################################
+                // Listen on socket
+                if (listen(server_fd, 1) < 0) {
+                    perror("error listening to port");
+                    exit(EXIT_FAILURE);
+                }
 
+                // Accept socket connection
+                if ((new_socket = accept(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) < 0) {
+                    perror("error accepting connection");
+                    exit(EXIT_FAILURE);
+                }
 
+                // Get number of pairs
+                unsigned int numPairs;
+                read(new_socket, &numPairs, 4);
+                numPairs = ntohl(numPairs);
 
-            //Once a path has been reconstructed it is returned
+                // Fill path vector
+                for (unsigned int i = 0; i < numPairs; i++) {
+                    std::pair<int,int> tuple;
+                    read(new_socket, &tuple.first, 4);
+                    read(new_socket, &tuple.second, 4);
+                    tuple.first = ntohl(tuple.first);
+                    tuple.second = ntohl(tuple.second);
+                    path.push_back(tuple);
+                }
+
+                wait(NULL);
+
+            } else {
+
+                // Create argument strings
+                char mainPyPath[PATH_MAX];
+                sprintf(mainPyPath, "%s/python/cpp-io.py", getenv("PRACSYS_PATH"));
+                char portStr[10];
+                sprintf(portStr, "%d", port);
+                char iiStr[10];
+                sprintf(iiStr, "%d", initial_i);
+                char ijStr[10];
+                sprintf(ijStr, "%d", initial_j);
+                char giStr[10];
+                sprintf(giStr, "%d", goal_i);
+                char gjStr[10];
+                sprintf(gjStr, "%d", goal_j);
+
+                // Run python script
+                execl(
+                    "/usr/bin/python3",
+                    "python3",
+                    mainPyPath,
+                    portStr,
+                    environment_file,
+                    iiStr,
+                    ijStr,
+                    giStr,
+                    gjStr,
+                    NULL
+                );
+            }
+            
             return path;
         }
-
     }
 }
