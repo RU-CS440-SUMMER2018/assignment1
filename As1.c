@@ -9,9 +9,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-
-//char** _2DBOARD_;
-
 //BOARD SIZE
 int Boundc;
 int Boundr;
@@ -46,10 +43,10 @@ typedef struct Queue_of_Paths_{
     
     //The Entire Path Sequence
     //Sequence of steps u,l,r,d, character array (May be as long as necessary)
-    //u = column-1
-    //d = column+1
-    //l = row-1
-    //r = row+1
+    //u = row-1
+    //d = row+1
+    //l = column-1
+    //r = column+1
     // use STRLEN(ListN) to get path length.
     char* ListN;
     
@@ -58,12 +55,15 @@ typedef struct Queue_of_Paths_{
     
 }Queue_of_Paths;
 
-//Priority Queue, because want to minimize paths of queue
+//Priority Queue, because want to minimize path sequence of queue
+//HEURISTIC WILL ENSURE THERE IS A COMPLETE PATH
 
 //Inserts a Path into Queue
 void Insert(Queue_of_Paths * Q);
 
 //Delete an entry in Queue
+//#############################################################################
+//ONCE FOUND THE OPTIMAL PATH, DELETE ALL OTHER Path Sequences, and get ready for the NEXT CHALLENGE
 void Delete(Queue_of_Paths * Q);
 
 //Call strcmp of each complete path sequence in queue, if true, delete one, if not, continue for all path pointers in queue
