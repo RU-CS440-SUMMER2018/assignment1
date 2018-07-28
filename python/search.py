@@ -51,7 +51,7 @@ def readMaze(filename):
 
     # Initialize the return list
     retList = []
-    for i in range(cols):
+    for _ in range(cols):
         retList.append([])
     
     # Save integers to return list
