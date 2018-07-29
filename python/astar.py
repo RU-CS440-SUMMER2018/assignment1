@@ -70,17 +70,27 @@ class NodeQueue:
     def pop(self):
         return heapq.heappop(self.lst)[1]
     def contains(self, node):
-        return not (self.lst.count(node) == 0)
+        for tup in self.lst:
+            if node == tup[1]:
+                return True
+        return False
     def find(self, node):
         'Returns a node that is equivalent to <node>'
-        return self.lst[self.lst.index(node)]
+        for tup in self.lst:
+            if node == tup[1]:
+                return tup[1]
+        return None
     def update(self, node):
         '''
         Replaces the node in the queue that is equivalent
         to <node> with <node>
         '''
-        self.lst.remove(node)
-        self.push(node)
+        for i in range((self.lst)):
+            if node == self.lst[i][1]:
+                del self.lst[i]
+                self.push(node)
+                break
+        return None
     def isEmpty(self):
         return len(self.lst) == 0
 
