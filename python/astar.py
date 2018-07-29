@@ -46,6 +46,9 @@ class Node:
 
     def __eq__(self, other):
         return self.state == other.state
+    
+    def __gt__(self, other):
+        return self.gValue() > other.gValue()
 
 class Action:
     '''
