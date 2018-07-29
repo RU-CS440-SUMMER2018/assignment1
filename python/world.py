@@ -21,14 +21,13 @@ def findActions(node, environment):
 
     for i in [ni+1, ni-1]:
         for j in [nj+1, nj-1]:
-            if environment[i][j]:
-                neighborNode = astar.Node(State(i, j), manhattanHeuristic)
-                action = astar.Action(1, node, neighborNode)
-                neighborNode.setFromAction(action)
-                actions.append(action)
+            try: 
+                if environment[i][j]:
+                    neighborNode = astar.Node(State(i, j), manhattanHeuristic)
+                    action = astar.Action(1, node, neighborNode)
+                    neighborNode.setFromAction(action)
+                    actions.append(action)
+            except IndexError:
+                continue
     
     return actions
-
-
-
-
