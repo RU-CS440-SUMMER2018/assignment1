@@ -113,33 +113,42 @@ void DeleteTree(TraceTree* TT,int Level);
 //Print Tree PReorder Up Right Down Left... Important, because these are all adjecent actions to eachother!!!
 void PrintTree(TraceTree* TT, int Level);
 
-int IndicateCompletePath = 0;
-
+//Trace, Main Function used to trace path(s) to goal, Complete, but needs Hcomplete in order to act on the best action first instead of trial and error
 char* Trace(char** ENV,int Startr,int Startc, int Endr, int Endc,char* App,int Size);
 
+//Used to determine where path started given path sequence.
 int* TraceBack(char* App, int Startr, int Startc, char** ENV);
 
+//First Node of Queue
 Queue_of_Paths* Q = NULL;
-
+//First Node of 4-tree
 TraceTree* T = NULL;
 
 int main(void) {
 
+    //open file2.txt read only
     FILE* S = fopen("file2.txt","r");
- 
+    //If error opening
     if(S==NULL){
     printf("Open Error");
     return -1;
     } 
-    
+    //Trace Tree 
     T = (TraceTree*)malloc(sizeof(TraceTree));
 	
-    //Q = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
-    //Q->Next=NULL;
 /////////////////////////////////////// MEM TEST    
 Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+    if(Q1==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     //Q->Next=Q1;
     char* s = (char*)malloc(5*sizeof(char));
+    if(s==NULL){
+     
+    printf("\nMEM ERROR\n");
+    exit(-1);   
+    }
     s[0]='u';
     s[1]='u';
     s[2]='l';
@@ -153,8 +162,17 @@ Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Insert(Q1);
 
 Queue_of_Paths* Q2 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+    if(Q2==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     //Q1->Next=Q2;
     char* s1 = (char*)malloc(5*sizeof(char));
+    if(s1==NULL){
+     
+    printf("\nMEM ERROR\n");
+    exit(-1);   
+    }
     s1[0]='l';
     s1[1]='l';
     s1[2]='u';
@@ -166,8 +184,17 @@ Queue_of_Paths* Q2 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Insert(Q2);
 
 Queue_of_Paths* Q3 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+    if(Q3==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     //Q2->Next=Q3;
     char* s3 = (char*)malloc(5*sizeof(char));
+    if(s3==NULL){
+     
+    printf("\nMEM ERROR\n");
+    exit(-1);   
+    }
     s3[0]='u';
     s3[1]='u';
     s3[2]='u';
@@ -177,8 +204,17 @@ Queue_of_Paths* Q3 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Q3->ListN = s3;
     Insert(Q3);
 Queue_of_Paths* Q4 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+    if(Q4==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     //Q3->Next=Q4;
     char* s2 = (char*)malloc(5*sizeof(char));
+    if(s2==NULL){
+     
+    printf("\nMEM ERROR\n");
+    exit(-1);   
+    }
     s2[0]='u';
     s2[1]='l';
     s2[2]='d';
@@ -190,8 +226,15 @@ Queue_of_Paths* Q4 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Insert(Q4);
 Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     //Q4->Next=Q5;
-    
+    if(Q5==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     char* s4 = (char*)malloc(5*sizeof(char));
+    if(s4==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     s4[0]='d';
     s4[1]='d';
     s4[2]='d';
@@ -224,6 +267,10 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
     //4- WAY TREE TEST
     char * You = (char*)malloc(2*sizeof(char));
+    if(You==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     You[0]='u';
     You[1]='\0';
     InsertTree('u',NULL);
@@ -285,9 +332,17 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
     //Important if want to always find current player position and keep track of goal node in the space!!!!!!!
     char** _BOARD_=(char**)malloc(Boundr*sizeof(char*));
+    if(_BOARD_==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     int i=0;
     while(i<Boundr){
    _BOARD_[i]=(char*)malloc(Boundc*sizeof(char));
+   if(_BOARD_[i]==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
     i++;
     }
     
@@ -301,7 +356,7 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     int I = CompleteHeuristic(35, 35, 35, 1,_BOARD_);
 
 
-    printf("\nCOMPLETE PATH FOUND: %d \n",I);
+    //printf("\nCOMPLETE PATH FOUND: %d \n",I);
 
     PrintTree(T,0);
 
@@ -369,7 +424,11 @@ int pos = 0;
     
 char op = ' ';  
   
-char* cpy = (char*)malloc(2*sizeof(char));    
+char* cpy = (char*)malloc(2*sizeof(char)); 
+if(cpy==NULL){
+    printf("\nMEM ERROR\n");
+    exit(-1);
+    }
 bzero(cpy,2);
 
 cpy[0]='1';  
@@ -398,7 +457,7 @@ while(fscanf(File,"%c",&op)!=EOF){
         
         printf("MEM ERROR, EXITING");
         
-        exit(0);
+        exit(-1);
     }
     else{
             
@@ -788,7 +847,10 @@ int ChangeC;
 
 ChangeR=startr-1;
 char* App = (char*)malloc(2*sizeof(char));
-
+if(App==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App,2);
 App[0]='u';
 //COORDINATES START 0 - n-1!!!!!!!!!!
@@ -803,7 +865,10 @@ ChangeC=startc+1;
 free(App);
 App=NULL;
 App = (char*)malloc(2*sizeof(char));
-
+if(App==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App,2);
 App[0]='r';
 
@@ -817,7 +882,10 @@ ChangeR=startr+1;
 free(App);
 App=NULL;
 App = (char*)malloc(2*sizeof(char));
-
+if(App==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App,2);
 App[0]='d';
 
@@ -831,7 +899,10 @@ ChangeC=startc-1;
 free(App);
 App=NULL;
 App = (char*)malloc(2*sizeof(char));
-
+if(App==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App,2);
 App[0]='l';
 //COORDINATES START 0 - n-1!!!!!!!!!!
@@ -1079,6 +1150,10 @@ App[Size-2] = 'u';
 printf("\nAPPENDED PATH:%s",App2);
 
 char* App3 = (char*)malloc(Size*sizeof(char));
+if(App3==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 //Trace(ENV,Startr-1, Startc, Endr, Endc,App);
@@ -1187,6 +1262,10 @@ App[Size-2] = 'r';
 printf("\nAPPENDED PATH:%s",App2);
 
 char* App3 = (char*)malloc(Size*sizeof(char));
+if(App3==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 
@@ -1295,6 +1374,10 @@ App[Size-2] = 'd';
 printf("\nAPPENDED PATH:%s",App2);
 
 char* App3 = (char*)malloc(Size*sizeof(char));
+if(App3==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 
@@ -1408,6 +1491,10 @@ App[Size-2] = 'l';
 printf("\nAPPENDED PATH:%s",App2);
 
 char* App3 = (char*)malloc(Size*sizeof(char));
+if(App3==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 
@@ -1463,15 +1550,6 @@ printf("\nCANT GO LEFT ANY MORE");
 
 printf("\n ALL PATH OPTIONS EXHAUSTED... \n");
 
-//Free Failed Path Seq
-
-/*
-if(App!=NULL){
-free(App);
-App=NULL;
-}
-*/
-
 return NULL;
 
 }
@@ -1523,6 +1601,10 @@ Startc = Startc+1;
 
 
 int* V = (int*)malloc(2*sizeof(int));
+if(V==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 V[0] = Startr;
 V[1] = Startc;
 
@@ -1547,7 +1629,10 @@ if(T2==NULL){
 printf("\n FIRST TREE NODE \n");
 
 T2 = (TraceTree*)malloc(sizeof(TraceTree));
-
+if(T2==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 T2-> ActFromPrev='\0';
 T2->NextUp=NULL;
 T2->NextRight=NULL;
@@ -1608,7 +1693,10 @@ printf("\nFINISHED FULLY RETRACING STEPS\n");
 if(T2->NextUp==NULL){
 if(C=='u'){
 T2->NextUp=(TraceTree*)malloc(sizeof(TraceTree));
-
+if(T2->NextUp==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 T2->NextUp->ActFromPrev = C;
 
 T2->NextUp->NextUp=NULL;
@@ -1625,7 +1713,10 @@ else if(T2->NextRight==NULL){
 if(C=='r'){
 
 T2->NextRight=(TraceTree*)malloc(sizeof(TraceTree));
-
+if(T2->NextRight==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 T2->NextRight->NextUp=NULL;
 T2->NextRight->NextRight=NULL;
 T2->NextRight->NextDown=NULL;
@@ -1642,7 +1733,10 @@ else if(T2->NextDown==NULL){
 if(C=='d'){
 
 T2->NextDown=(TraceTree*)malloc(sizeof(TraceTree));
-
+if(T2->NextDown==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 T2->NextDown->NextUp=NULL;
 T2->NextDown->NextRight=NULL;
 T2->NextDown->NextDown=NULL;
@@ -1660,7 +1754,10 @@ else if(T2->NextLeft==NULL){
 if(C=='l'){
 
 T2->NextLeft=(TraceTree*)malloc(sizeof(TraceTree));
-
+if(T2->NextLeft==NULL){
+    printf("\nMEM ERROR at %d\n"__LINE__);
+    exit(-1);
+    }
 T2->NextLeft->NextUp=NULL;
 T2->NextLeft->NextRight=NULL;
 T2->NextLeft->NextDown=NULL;
