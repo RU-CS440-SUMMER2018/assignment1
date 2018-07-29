@@ -17,16 +17,20 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
     goalNode = astar.Node(goalState, world.manhattanHeuristic)
     environment = readMaze(filename)
 
+    retList = []
     foundGoal = astar.aStar(startNode, goalNode, environment)
     while foundGoal:
         fromAction = foundGoal.fromAction
         i = foundGoal.state.i
         j = foundGoal.state.j
-        print('(' + str(i) + ', ' + str(j) + ')')
+        retList.append((i,j))
         if fromAction:
             foundGoal = fromAction.fromNode
         else:
             foundGoal = None
+    
+    retList.reverse()
+    return retList
 
 def readMaze(filename):
     '''
