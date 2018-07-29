@@ -1,42 +1,38 @@
-# This is the search function you guys need to populate.
-#
-# Given filename of the enviornment, the initial coordinates
-# and the goal coordinates.
-# 
-# You must return a list of tuples. Each tuple must be a pair
-# or integers.
-#
-# Currently This has basically the same simple algorithm that
-# the original c++ code has as a demonstration.
-# 
-# Feel free to add whatever functions or variables you like in this file.
+import world
+import astar
+
 def search(filename, initial_i, initial_j, goal_i, goal_j):
 
-    retList = []
-    retList.append((initial_i,initial_j))
+    '''    
+    <filename> is the file that contains the enviornment.
+    the rest of the arguments are the initial and goal coordinates.
+    
+    Returns a list of tuples. Each tuple is a pair of integers.
+    '''
 
-    i = initial_i
-    while i < goal_i:
-        i += 1
-        retList.append((i, initial_j))
-    i = initial_i
-    while i > goal_i:
-        i -= 1
-        retList.append((i, initial_j))
-    j = initial_j
-    while j < goal_j:
-        j += 1
-        retList.append((goal_i, j))
-    j = initial_j
-    while j > goal_j:
-        j -= 1
-        retList.append((goal_i, j))
+    startState = world.State(initial_i, initial_j)
+    goalState = world.State(goal_i, goal_j)
 
-    return retList
+    startNode = astar.Node(startState, world.manhattanHeuristic)
+    goalNode = astar.Node(goalState, world.manhattanHeuristic)
+    environment = readMaze(filename)
 
-# Returns a 2D list[i][j] representing
-# the maze in filename
+    foundGoal = astar.aStar(startNode, goalNode, environment)
+    while foundGoal:
+        fromAction = foundGoal.fromAction
+        i = foundGoal.state.i
+        j = foundGoal.state.j
+        print('(' + str(i) + ', ' + str(j) + ')')
+        if fromAction:
+            foundGoal = fromAction.fromNode
+        else:
+            foundGoal = None
+
 def readMaze(filename):
+    '''
+    Returns a 2D list[i][j] representing
+    the maze in filename
+    '''
 
     # Read file
     file = open(filename, 'r')
