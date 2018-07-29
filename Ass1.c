@@ -56,8 +56,11 @@ typedef struct Queue_of_Paths_{
     //l = column - 1
     //r = column + 1
     // use STRLEN(ListN) to get path length.
+    //THIS is G
     char* ListN;
     
+    int H1_H2_G;
+
     //Another Path List (Potential)
     struct Queue_of_Paths_* Next;
     
@@ -113,42 +116,37 @@ void DeleteTree(TraceTree* TT,int Level);
 //Print Tree PReorder Up Right Down Left... Important, because these are all adjecent actions to eachother!!!
 void PrintTree(TraceTree* TT, int Level);
 
-//Trace, Main Function used to trace path(s) to goal, Complete, but needs Hcomplete in order to act on the best action first instead of trial and error
+int IndicateCompletePath = 0;
+
 char* Trace(char** ENV,int Startr,int Startc, int Endr, int Endc,char* App,int Size);
 
-//Used to determine where path started given path sequence.
+int STARTR = 0;
+int STARTC = 0;
 int* TraceBack(char* App, int Startr, int Startc, char** ENV);
 
-//First Node of Queue
 Queue_of_Paths* Q = NULL;
-//First Node of 4-tree
+
 TraceTree* T = NULL;
 
 int main(void) {
 
-    //open file2.txt read only
+
     FILE* S = fopen("file2.txt","r");
-    //If error opening
+ 
     if(S==NULL){
     printf("Open Error");
     return -1;
     } 
-    //Trace Tree 
+    
     T = (TraceTree*)malloc(sizeof(TraceTree));
 	
+    //Q = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+    //Q->Next=NULL;
 /////////////////////////////////////// MEM TEST    
 Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
-    if(Q1==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
+
     //Q->Next=Q1;
     char* s = (char*)malloc(5*sizeof(char));
-    if(s==NULL){
-     
-    printf("\nMEM ERROR\n");
-    exit(-1);   
-    }
     s[0]='u';
     s[1]='u';
     s[2]='l';
@@ -162,17 +160,8 @@ Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Insert(Q1);
 
 Queue_of_Paths* Q2 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
-    if(Q2==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
     //Q1->Next=Q2;
     char* s1 = (char*)malloc(5*sizeof(char));
-    if(s1==NULL){
-     
-    printf("\nMEM ERROR\n");
-    exit(-1);   
-    }
     s1[0]='l';
     s1[1]='l';
     s1[2]='u';
@@ -184,17 +173,8 @@ Queue_of_Paths* Q2 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Insert(Q2);
 
 Queue_of_Paths* Q3 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
-    if(Q3==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
     //Q2->Next=Q3;
     char* s3 = (char*)malloc(5*sizeof(char));
-    if(s3==NULL){
-     
-    printf("\nMEM ERROR\n");
-    exit(-1);   
-    }
     s3[0]='u';
     s3[1]='u';
     s3[2]='u';
@@ -204,17 +184,8 @@ Queue_of_Paths* Q3 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Q3->ListN = s3;
     Insert(Q3);
 Queue_of_Paths* Q4 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
-    if(Q4==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
     //Q3->Next=Q4;
     char* s2 = (char*)malloc(5*sizeof(char));
-    if(s2==NULL){
-     
-    printf("\nMEM ERROR\n");
-    exit(-1);   
-    }
     s2[0]='u';
     s2[1]='l';
     s2[2]='d';
@@ -226,15 +197,8 @@ Queue_of_Paths* Q4 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Insert(Q4);
 Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     //Q4->Next=Q5;
-    if(Q5==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
+    
     char* s4 = (char*)malloc(5*sizeof(char));
-    if(s4==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
     s4[0]='d';
     s4[1]='d';
     s4[2]='d';
@@ -249,6 +213,10 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
  
     //Delete(Q1);
 
+    //free(Q1);
+
+    //Q1=NULL;
+
     //PrintQueue();
 
     Delete(Q5);
@@ -259,23 +227,23 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
     Delete(Q4);
 
-    //Delete(Q);
+    Delete(Q);
+    //PrintQueue();
+
 
     //Delete(Q);
+    //
+    //return 0;
 // END MEM TEST////////////////////////////////////////////
 
 
     //4- WAY TREE TEST
-    char * You = (char*)malloc(2*sizeof(char));
-    if(You==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
-    You[0]='u';
-    You[1]='\0';
-    InsertTree('u',NULL);
+    //char * You = (char*)malloc(2*sizeof(char));
+    //You[0]='u';
+    //You[1]='\0';
+    //InsertTree('u',NULL);
 
-    InsertTree('u',You);
+    //InsertTree('u',You);
     //4- WAY TREE TEST
     
     //Use h1, Complete Heuristic, and h2, Manhattan Heuristic, as the estimate
@@ -332,17 +300,9 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
     //Important if want to always find current player position and keep track of goal node in the space!!!!!!!
     char** _BOARD_=(char**)malloc(Boundr*sizeof(char*));
-    if(_BOARD_==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
     int i=0;
     while(i<Boundr){
    _BOARD_[i]=(char*)malloc(Boundc*sizeof(char));
-   if(_BOARD_[i]==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
     i++;
     }
     
@@ -352,13 +312,17 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     PrintBoard(_BOARD_);
   
 
-    //36-1,36-1,36-1,2-1
+    //36-1,36-1,36-1,2-1 file2.txt
+    //1 48 48 1 - maze
+    _BOARD_[35][35]='P';
+    _BOARD_[35][1] = '.';
+    
     int I = CompleteHeuristic(35, 35, 35, 1,_BOARD_);
 
 
-    //printf("\nCOMPLETE PATH FOUND: %d \n",I);
+    printf("\nCOMPLETE PATH FOUND: %d \n",I);
 
-    PrintTree(T,0);
+    //PrintTree(T,0);
 
     PrintQueue();
  
@@ -424,11 +388,7 @@ int pos = 0;
     
 char op = ' ';  
   
-char* cpy = (char*)malloc(2*sizeof(char)); 
-if(cpy==NULL){
-    printf("\nMEM ERROR\n");
-    exit(-1);
-    }
+char* cpy = (char*)malloc(2*sizeof(char));    
 bzero(cpy,2);
 
 cpy[0]='1';  
@@ -457,7 +417,7 @@ while(fscanf(File,"%c",&op)!=EOF){
         
         printf("MEM ERROR, EXITING");
         
-        exit(-1);
+        exit(0);
     }
     else{
             
@@ -653,6 +613,21 @@ return;
 }
 
 Queue_of_Paths* CheckDuplicatePath(Queue_of_Paths * Q1){
+if(Q==NULL){
+if(Q1!=NULL){
+//Insert Data...
+//Insert(Q1);
+//Q=Q1;
+//Q->Next=NULL;
+PrintQueue();
+
+return NULL;
+
+}
+else{
+return NULL;
+}
+}
 if(Q1==NULL){
 return NULL;
 }
@@ -660,7 +635,7 @@ Queue_of_Paths * Q2 = Q;
 
 if(Q1->ListN!=NULL&&Q2->ListN!=NULL){
 
-if(strcmp(Q1->ListN,Q2->ListN)==0&&Q1->StartR==Q2->StartR&&Q1->StartC==Q2->StartC&&Q1->EndR==Q2->EndR&&Q1->EndC==Q2->EndC){
+if((strcmp(Q1->ListN,Q2->ListN)==0&&Q1->StartR==Q2->StartR&&Q1->StartC==Q2->StartC&&Q1->EndR==Q2->EndR&&Q1->EndC==Q2->EndC)||Q2->H1_H2_G>Q1->H1_H2_G){
 
 if(Q1->ListN!=NULL)
 free(Q1->ListN);
@@ -686,7 +661,7 @@ if(Q2->Next!=NULL){
 
 if(Q1->ListN!=NULL&&Q2->ListN!=NULL){
 
-if(strcmp(Q1->ListN,Q2->Next->ListN)==0&&Q1->StartR==Q2->Next->StartR&&Q1->StartC==Q2->Next->StartC&&Q1->EndR==Q2->Next->EndR&&Q1->EndC==Q2->Next->EndC){
+if((strcmp(Q1->ListN,Q2->Next->ListN)==0&&Q1->StartR==Q2->Next->StartR&&Q1->StartC==Q2->Next->StartC&&Q1->EndR==Q2->Next->EndR&&Q1->EndC==Q2->Next->EndC)||Q2->H1_H2_G>Q1->H1_H2_G){
 printf("\nFOUND SAME PATH SEQS(((INCLUDING FROM SAME POSITION)))\n");
 
 //Return pointer within the queue, but only the parent of the pointer!
@@ -709,7 +684,7 @@ else{
 
 printf("\nPATH SEQS ARE NULLLL, CONTINUEEEEE\n");
 
-if(Q1->ListN==NULL&&Q2->ListN==NULL&&Q1->StartR==Q2->StartR&&Q1->StartC==Q2->StartC&&Q1->EndR==Q2->EndR&&Q1->EndC==Q2->EndC){
+if((Q1->ListN==NULL&&Q2->ListN==NULL&&Q1->StartR==Q2->StartR&&Q1->StartC==Q2->StartC&&Q1->EndR==Q2->EndR&&Q1->EndC==Q2->EndC)||Q2->H1_H2_G>Q1->H1_H2_G){
 
 printf("\nDELETING DUPLICATE...\n");
 
@@ -737,6 +712,7 @@ return NULL;
 }
 
 void PrintQueue(){
+
 if(Q==NULL){
 printf("\n-----START-QUEUE-----");
 printf("\nNULL\n");
@@ -754,8 +730,10 @@ while(Q1!=NULL){
 printf("\n%d:",i);
 printf("Start Row:%d\nStart Column:%d\n",Q1->StartR,Q1->StartC);
 printf("Goal Row:%d\nGoal Column:%d\n",Q1->EndR,Q1->EndC);
+if(Q1->ListN!=NULL){
 printf("SEQ:%s (SIZE:%d) \n",Q1->ListN,(int)strlen(Q1->ListN));
-
+}
+printf("\nHeuristic (Manhattan+Complete): %d\n",Q1->H1_H2_G);
 Queue_of_Paths* Q2 = Q1->Next;
 
 Q1 = Q2;
@@ -799,6 +777,8 @@ return;
 }
 
 int CompleteHeuristic(int startr, int startc, int goalr, int goalc,char** _2DARRAY_){
+STARTR = startr;
+STARTC = startc;
 
 if(startr==goalr&&startc==goalc){
 Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
@@ -808,12 +788,15 @@ Q1->StartC = startc;
 Q1->EndR = goalr;
 Q1->EndC = goalc;
 
+Q1->H1_H2_G = 0;
+
 //Don't Have to Move
 Q1->ListN = (char*)malloc(2*sizeof(char));
 bzero((Q1->ListN),2);
 (Q1->ListN)[0]='\0';
 
 Insert(Q1);
+
 return 1;
 }
 
@@ -847,14 +830,11 @@ int ChangeC;
 
 ChangeR=startr-1;
 char* App = (char*)malloc(2*sizeof(char));
-if(App==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 bzero(App,2);
 App[0]='u';
 //COORDINATES START 0 - n-1!!!!!!!!!!
-char* U = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,2);
+char* U = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,1);
 
 ResetBoard(_2DARRAY_);
 
@@ -865,15 +845,12 @@ ChangeC=startc+1;
 free(App);
 App=NULL;
 App = (char*)malloc(2*sizeof(char));
-if(App==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 bzero(App,2);
 App[0]='r';
 
 //COORDINATES START 0 - n-1!!!!!!!!!!
-char* R = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App,2);
+char* R = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App,1);
 
 ResetBoard(_2DARRAY_);
 
@@ -882,15 +859,12 @@ ChangeR=startr+1;
 free(App);
 App=NULL;
 App = (char*)malloc(2*sizeof(char));
-if(App==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 bzero(App,2);
 App[0]='d';
 
 //COORDINATES START 0 - n-1!!!!!!!!!!
-char* D = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,2);
+char* D = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,1);
 
 ResetBoard(_2DARRAY_);
 
@@ -899,14 +873,11 @@ ChangeC=startc-1;
 free(App);
 App=NULL;
 App = (char*)malloc(2*sizeof(char));
-if(App==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 bzero(App,2);
 App[0]='l';
 //COORDINATES START 0 - n-1!!!!!!!!!!
-char* L = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App,2);
+char* L = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App,1);
 
 //L = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App);
 free(App);
@@ -915,6 +886,12 @@ App=NULL;
 printf("\nUP PATH:%s\nRIGHT PATH:%s\n\nDOWN PATH:%s\nLEFT PATH:%s\n",U==NULL? "NULL":U,R==NULL? "NULL":R,D==NULL? "NULL":D,L==NULL? "NULL":L);
 
 PrintQueue();
+
+if(Q==NULL){
+
+return 0;
+
+}
 
 /*
 if(U==NULL&&R==NULL&&D==NULL&&L==NULL){
@@ -1106,14 +1083,18 @@ if(ENV[Startr-1][Startc]!='X'){
 //MARK AS VISITED!
 ENV[Startr-1][Startc]='X';
 ////
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
-App2[Size-1]='\0';
+strncpy(App2,App,Size-3);
+//App2[Size-1]='\0';
 //App2[Size-2]='u';
+char* u = (char*)malloc(2*sizeof(char));
+u[0]='u';
+u[1]='\0';
 strcat(App2,"u");
+free(u);
 /*
 App = (char*)realloc(App,((Size)*sizeof(char)));
 App[Size-1] = '\0';
@@ -1133,59 +1114,73 @@ else{
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr-1][Startc]=='.'){
 //Sequence of Steps
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
+strncpy(App2,App,Size-3);
 //App2[Size-1]='\0';
 //App2[Size-2]='u';
-strcat(App2,"u");
-
-/*
-App = (char*)realloc(App,((Size)*sizeof(char)));
-App[Size-1] = '\0';
-App[Size-2] = 'u';
-*/
+char* u = (char*)malloc(2*sizeof(char));
+u[0]='u';
+u[1]='\0';
+strcat(App2,u);
+free(u);
 printf("\nAPPENDED PATH:%s",App2);
 
-char* App3 = (char*)malloc(Size*sizeof(char));
-if(App3==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+//exit(0);
+
+char* App3 = (char*)malloc((Size+1)*sizeof(char));
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 //Trace(ENV,Startr-1, Startc, Endr, Endc,App);
 
+//exit(0);
 
 Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
-int* V = TraceBack(App3, Startr, Startc, ENV);
+if(Q1==NULL){
+printf("\nMEM ERROR:\n");
 
-printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
-Q1->StartR = V[0];
-Q1->StartC = V[1];
-free(V);
-V=NULL;
+exit(-1);
+
+}
+
+///printf("\nAPPENDED PATH:%s",App3);
+
+//TraceBack(App3, Startr, Startc, ENV);
+
+printf("\n ORIG START : [%d,%d]\n",STARTR,STARTC);
+Q1->StartR = STARTR;
+Q1->StartC = STARTC;
+//free(V);
+//V=NULL;
 Q1->EndR = Endr;
 Q1->EndC = Endc;
 Q1->ListN = App3;
+
+Q1->H1_H2_G =  ManhattanHeuristic(STARTR,STARTC,Endr,Endc)+strlen(App3);
+
 //FIND MIN OF THESE PATHS...
 ///Q1->ListN = Min {PATHS}
 ////
 ////IF Not Duplicate Path
+
+//exit(0);
+
 if(CheckDuplicatePath(Q1)==NULL){
 ////Then, Insert Path into Queue
+
 Insert(Q1);
 
 }
+/*
 else{
-//free(Q1->ListN);
+free(Q1->ListN);
 free(Q1);
 Q1=NULL;
 }
-
+*/
 PrintQueue();
 
 //exit(0);
@@ -1215,15 +1210,18 @@ if(ENV[Startr][Startc+1]!='X'){
 //May Proceed Here
 ENV[Startr][Startc+1]='X';
 
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
-App2[Size-1]='\0';
+strncpy(App2,App,Size-3);
+//App2[Size-1]='\0';
 //App2[Size-2]='u';
-strcat(App2,"r");
-
+char* r = (char*)malloc(2*sizeof(char));
+r[0]='r';
+r[1]='\0';
+strcat(App2,r);
+free(r);
 /*
 App = (char*)realloc(App,((Size)*sizeof(char)));
 App[Size-1] = '\0';
@@ -1245,15 +1243,18 @@ else{
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr][Startc+1]=='.'){
 //Sequence of Steps
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
-App2[Size-1]='\0';
+strncpy(App2,App,Size-3);
+//App2[Size-1]='\0';
 //App2[Size-2]='u';
+char* r = (char*)malloc(2*sizeof(char));
+r[0]='r';
+r[1]='\0';
 strcat(App2,"r");
-
+free(r);
 /*
 App = (char*)realloc(App,((Size)*sizeof(char)));
 App[Size-1] = '\0';
@@ -1261,26 +1262,25 @@ App[Size-2] = 'r';
 */
 printf("\nAPPENDED PATH:%s",App2);
 
-char* App3 = (char*)malloc(Size*sizeof(char));
-if(App3==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+char* App3 = (char*)malloc((Size+1)*sizeof(char));
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 
 Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
-int* V = TraceBack(App3, Startr, Startc, ENV);
+//int* V = TraceBack(App3, Startr, Startc, ENV);
 
-printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
-Q1->StartR = V[0];
-Q1->StartC = V[1];
-free(V);
-V=NULL;
+printf("\n ORIG START : [%d,%d]\n",STARTR,STARTC);
+Q1->StartR = STARTR;
+Q1->StartC = STARTC;
+//free(V);
+//V=NULL;
 Q1->EndR = Endr;
 Q1->EndC = Endc;
 Q1->ListN = App3;
+
+Q1->H1_H2_G =  ManhattanHeuristic(STARTR,STARTC,Endr,Endc)+strlen(App3);
+
 //FIND MIN OF THESE PATHS...
 /////Q1->ListN = Min {PATHS}
 //////
@@ -1288,13 +1288,14 @@ Q1->ListN = App3;
 if(CheckDuplicatePath(Q1)==NULL){
 //////Then, Insert Path into Queue
 Insert(Q1);
-//
 }
+/*
 else{
-//free(Q1->ListN);
+free(Q1->ListN);
 free(Q1);
 Q1=NULL;
 }
+*/
 //
 //
 
@@ -1331,14 +1332,18 @@ if(ENV[Startr+1][Startc]!='X'){
 //May Procees Here
 ENV[Startr+1][Startc]='X';
 
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
-App2[Size-1]='\0';
+strncpy(App2,App,Size-3);
+//App2[Size-1]='\0';
 //App2[Size-2]='u';
-strcat(App2,"d");
+char* d = (char*)malloc(2*sizeof(char));
+d[0]='d';
+d[1]='\0';
+strcat(App2,d);
+free(d);
 /*
 App = (char*)realloc(App,((Size)*sizeof(char)));
 App[Size-1] = '\0';
@@ -1358,14 +1363,18 @@ else{
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr+1][Startc]=='.'){
 //Sequence of Steps
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
-App2[Size-1]='\0';
+strncpy(App2,App,Size-3);
+//App2[Size-1]='\0';
 //App2[Size-2]='u';
-strcat(App2,"d");
+char* d = (char*)malloc(2*sizeof(char));
+d[0]='d';
+d[1]='\0';
+strcat(App2,d);
+free(d);
 /*
 App = (char*)realloc(App,((Size)*sizeof(char)));
 App[Size-1] = '\0';
@@ -1373,47 +1382,46 @@ App[Size-2] = 'd';
 */
 printf("\nAPPENDED PATH:%s",App2);
 
-char* App3 = (char*)malloc(Size*sizeof(char));
-if(App3==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+char* App3 = (char*)malloc((Size+1)*sizeof(char));
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 
 Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
-int* V = TraceBack(App3, Startr, Startc, ENV);
+//int* V = TraceBack(App3, Startr, Startc, ENV);
 
-printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
-Q1->StartR = V[0];
-Q1->StartC = V[1];
-free(V);
-V=NULL;
+printf("\n ORIG START : [%d,%d]\n",STARTR,STARTC);
+Q1->StartR = STARTR;
+Q1->StartC = STARTC;
+//free(V);
+//V=NULL;
 Q1->EndR = Endr;
 Q1->EndC = Endc;
 Q1->ListN = App3;
 //FIND MIN OF THESE PATHS...
 ///////Q1->ListN = Min {PATHS}
 ////////
+
+Q1->H1_H2_G =  ManhattanHeuristic(STARTR,STARTC,Endr,Endc)+strlen(App3);
+
 ////////IF Not Duplicate Path
 if(CheckDuplicatePath(Q1)==NULL){
 ////////Then, Insert Path into Queue
 Insert(Q1);
-////
+
 }
+/*
 else{
 //free(Q1->ListN);
 free(Q1);
 Q1=NULL;
 }
+*/
 ////
-
 
 PrintQueue();
 
 //exit(0);
-
 
 return App3;
 //
@@ -1448,14 +1456,18 @@ ENV[Startr][Startc-1]='X';
 //return NULL;
 
 //May Procede Here
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
-App2[Size-1]='\0';
+strncpy(App2,App,Size-3);
+//App2[Size-1]='\0';
 //App2[Size-2]='u';
-strcat(App2,"l");
+char* l = (char*)malloc(2*sizeof(char));
+l[0]='l';
+l[1]='\0';
+strcat(App2,l);
+free(l);
 /*
 App = (char*)realloc(App,((Size)*sizeof(char)));
 App[Size-1] = '\0';
@@ -1475,14 +1487,18 @@ else{
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr][Startc-1]=='.'){
 //Sequence of Steps
-Size = Size+1;
+Size = Size+3;
 
 char App2[Size];
 bzero(App2,Size);
-strncpy(App2,App,Size);
-App2[Size-1]='\0';
+strncpy(App2,App,Size-3);
+//App2[Size-1]='\0';
 //App2[Size-2]='u';
-strcat(App2,"l");
+char* l = (char*)malloc(2*sizeof(char));
+l[0]='l';
+l[1]='\0';
+strcat(App2,l);
+free(l);
 /*
 App = (char*)realloc(App,((Size)*sizeof(char)));
 App[Size-1] = '\0';
@@ -1490,39 +1506,39 @@ App[Size-2] = 'l';
 */
 printf("\nAPPENDED PATH:%s",App2);
 
-char* App3 = (char*)malloc(Size*sizeof(char));
-if(App3==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+char* App3 = (char*)malloc((Size+1)*sizeof(char));
 bzero(App3,Size);
 strncpy(App3,App2,Size);
 
 Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
-int* V = TraceBack(App3, Startr, Startc,ENV);
+//int* V = TraceBack(App3, Startr, Startc,ENV);
 
-printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
-Q1->StartR = V[0];
-Q1->StartC = V[1];
-free(V);
-V=NULL;
+printf("\n ORIG START : [%d,%d]\n",STARTR,STARTC);
+Q1->StartR = STARTR;
+Q1->StartC = STARTC;
+//free(V);
+//V=NULL;
 Q1->EndR = Endr;
 Q1->EndC = Endc;
 Q1->ListN = App3;
 //FIND MIN OF THESE PATHS...
 ///////Q1->ListN = Min {PATHS}
 ////////
+
+Q1->H1_H2_G =  ManhattanHeuristic(STARTR,STARTC,Endr,Endc)+strlen(App3);
+
 ////////IF Not Duplicate Path
 if(CheckDuplicatePath(Q1)==NULL){
 ////////Then, Insert Path into Queue
 Insert(Q1);
-////
-}else{
-//free(Q1->ListN);
+}
+/*else{
+free(Q1->ListN);
 free(Q1);
 Q1=NULL;
-}
+}*/
+
 ////
 //
 
@@ -1550,13 +1566,27 @@ printf("\nCANT GO LEFT ANY MORE");
 
 printf("\n ALL PATH OPTIONS EXHAUSTED... \n");
 
+//Free Failed Path Seq
+
+/*
+if(App!=NULL){
+free(App);
+App=NULL;
+}
+*/
+
 return NULL;
 
 }
 
 
 int* TraceBack(char* S,int Startr, int Startc, char** ENV){
+
 int i = strlen(S)-1;
+
+//printf("\nLENGTH:%d",i);
+
+//return NULL;
 
 while(i>=0){
 
@@ -1573,41 +1603,66 @@ else if(S[i]=='l')
 Startc=Startc+1;
 
 i = i-1;
+
 }
 
+int* V = (int*)malloc(2*sizeof(int));
+//V[0] = Startr;
+//V[1] = Startc;
+
 //Down
+if(Startr>0){
 if(ENV[Startr-1][Startc]=='P'){
 
 Startr=Startr-1;
-
-}
-//Right
-else if(ENV[Startr][Startc-1]=='P'){
-
-Startc=Startc-1;
-
-}
-//Up
-else if(ENV[Startr+1][Startc]=='P'){
-
-Startr=Startr+1;
-}
-//Left
-else if(ENV[Startr][Startc+1]=='P'){
-
-Startc = Startc+1;
-
-}
-
-
-int* V = (int*)malloc(2*sizeof(int));
-if(V==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
 V[0] = Startr;
 V[1] = Startc;
 
+return V;
+
+}
+}
+//Right
+if(Startc>0){
+if(ENV[Startr][Startc-1]=='P'){
+
+Startc=Startc-1;
+V[0] = Startr;
+V[1] = Startc;
+
+return V;
+
+}
+}
+//Up
+if(Startr<Boundr-1){
+if(ENV[Startr+1][Startc]=='P'){
+
+Startr=Startr+1;
+V[0] = Startr;
+V[1] = Startc;
+
+return V;
+
+}
+}
+//Left
+if(Startc<Boundc-1){
+if(ENV[Startr][Startc+1]=='P'){
+
+Startc = Startc+1;
+V[0] = Startr;
+V[1] = Startc;
+
+return V;
+
+}
+}
+/*
+int* V = (int*)malloc(2*sizeof(int));
+V[0] = Startr;
+V[1] = Startc;
+*/
 //Return Coordinates of original place
 return V;
 }
@@ -1629,10 +1684,7 @@ if(T2==NULL){
 printf("\n FIRST TREE NODE \n");
 
 T2 = (TraceTree*)malloc(sizeof(TraceTree));
-if(T2==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 T2-> ActFromPrev='\0';
 T2->NextUp=NULL;
 T2->NextRight=NULL;
@@ -1693,10 +1745,7 @@ printf("\nFINISHED FULLY RETRACING STEPS\n");
 if(T2->NextUp==NULL){
 if(C=='u'){
 T2->NextUp=(TraceTree*)malloc(sizeof(TraceTree));
-if(T2->NextUp==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 T2->NextUp->ActFromPrev = C;
 
 T2->NextUp->NextUp=NULL;
@@ -1713,10 +1762,7 @@ else if(T2->NextRight==NULL){
 if(C=='r'){
 
 T2->NextRight=(TraceTree*)malloc(sizeof(TraceTree));
-if(T2->NextRight==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 T2->NextRight->NextUp=NULL;
 T2->NextRight->NextRight=NULL;
 T2->NextRight->NextDown=NULL;
@@ -1733,10 +1779,7 @@ else if(T2->NextDown==NULL){
 if(C=='d'){
 
 T2->NextDown=(TraceTree*)malloc(sizeof(TraceTree));
-if(T2->NextDown==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 T2->NextDown->NextUp=NULL;
 T2->NextDown->NextRight=NULL;
 T2->NextDown->NextDown=NULL;
@@ -1754,10 +1797,7 @@ else if(T2->NextLeft==NULL){
 if(C=='l'){
 
 T2->NextLeft=(TraceTree*)malloc(sizeof(TraceTree));
-if(T2->NextLeft==NULL){
-    printf("\nMEM ERROR at %d\n"__LINE__);
-    exit(-1);
-    }
+
 T2->NextLeft->NextUp=NULL;
 T2->NextLeft->NextRight=NULL;
 T2->NextLeft->NextDown=NULL;
@@ -1890,7 +1930,7 @@ TT=NULL;
 }
 printf("\n\nTREE:");
 
-PrintTree(T,0);
+//PrintTree(T,0);
 
 return;
 }
@@ -1921,4 +1961,63 @@ printf("<\\LEVEL>:%d (U,R,D,L)\n",Level);
 
 return;
 }
+
+Queue_of_Paths* Minimize(Queue_of_Paths* QQ){
+
+int ContendingValue = QQ->H1_H2_G;
+
+Queue_of_Paths*Q2 = Q;
+//Q2 = Q;
+//
+while(Q2!=NULL){
+//
+if(Q2->Next!=NULL){
+if(Q2->Next->H1_H2_G>ContendingValue&&Q2->Next->StartR==STARTR&&Q2->Next->StartC==STARTC){
+
+//Q2 = QQ;
+
+//Q2->Next=(Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+Q2->Next->StartR = QQ->StartR;
+Q2->Next->StartC = QQ->StartC;
+
+Q2->Next->EndR = QQ->EndR;
+Q2->Next->EndC = QQ->EndC;
+
+Q2->Next->ListN = QQ->ListN;
+//Set Up Queue Val
+Q2->Next->H1_H2_G=ContendingValue;
+
+//Q2->Next=Q1;
+//Q2->Next->Next=NULL;
+//if(QQ->ListN!=NULL)
+//free(QQ->ListN);
+
+//free(QQ);
+//QQ=NULL;
+
+return Q2;
+
+}
+
+}
+//
+Queue_of_Paths* Q3 = Q2->Next;
+//
+Q2 = Q3;
+}
+//
+
+//If not least path (Best approx)
+return NULL;
+}
+
+int ManhattanHeuristic(int r1, int c1, int r2, int c2){
+
+double R = abs((double)(r2-r1)*(double)(r2-r1));//abs(r2-r1);
+double C = abs((double)(c2-c1)*(double)(c2-c1));
+
+return (int)(ceil(sqrt(R+C)));
+
+}
+
 
