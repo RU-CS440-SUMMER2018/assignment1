@@ -16,18 +16,17 @@ def zeroHeuristic(fromNode, toNode):
 def findActions(node, environment):
 
     actions = []
-    ni = node.state.i
-    nj = node.state.j
+    i = node.state.i
+    j = node.state.j
 
-    for i in [ni+1, ni-1]:
-        for j in [nj+1, nj-1]:
-            try: 
-                if environment[i][j]:
-                    neighborNode = astar.Node(State(i, j), manhattanHeuristic)
-                    action = astar.Action(1, node, neighborNode)
-                    neighborNode.setFromAction(action)
-                    actions.append(action)
-            except IndexError:
-                continue
+    for ij in [(i+1,j),(i-1,j),(i,j+1),(i,j-1)]:
+        try: 
+            if (not ij[0] < 0) and (not ij[1] < 0) and environment[ij[0]][ij[1]]:
+                neighborNode = astar.Node(State(ij[0], ij[1]), manhattanHeuristic)
+                action = astar.Action(1, node, neighborNode)
+                neighborNode.setFromAction(action)
+                actions.append(action)
+        except IndexError:
+            continue
     
     return actions
