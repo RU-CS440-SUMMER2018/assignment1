@@ -57,16 +57,16 @@ def readMaze(filename):
 
     # Initialize the return list
     retList = []
-    for _ in range(cols):
+    for _ in range(rows):
         retList.append([])
     
     # Save integers to return list
-    col = 0
-    while col < cols:
-        row = 0
-        while row < rows:
-            retList[col].append(int(lines[col][row*2]))
-            row += 1
-        col += 1
+    row = 0
+    while row < rows:
+        col = 0
+        while col < cols:
+            retList[row].append(int(lines[row][col*2]))
+            col += 1
+        row += 1
 
     return retList
