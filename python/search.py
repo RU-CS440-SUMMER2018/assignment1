@@ -38,6 +38,7 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
     return retList
 
 def readMaze(filename):
+    
     '''
     Returns a 2D list[i][j] representing
     the maze in filename

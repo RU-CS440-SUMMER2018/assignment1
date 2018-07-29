@@ -2,6 +2,7 @@ import heapq
 import world
 
 class Node:
+    
     '''
     Instances represents a node.
 
@@ -98,6 +99,7 @@ class NodeQueue:
         return len(self.lst) == 0
 
 def aStar(startNode, goalNode, environment):
+
     '''
     Performs A* search from <startNode> to <goalNode>
     in <environment>. Returns a node that is equivalent

@@ -20,6 +20,7 @@ def zeroHeuristic(fromNode, toNode):
     return 0
 
 def findActions(node, environment):
+    
     '''
     Finds all the actions <node> can make
     in <envoronment> and returns them in

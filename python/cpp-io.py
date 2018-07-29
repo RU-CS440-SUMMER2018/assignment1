@@ -10,8 +10,12 @@ initial_j = int(sys.argv[4])
 goal_i = int(sys.argv[5])
 goal_j = int(sys.argv[6])
 
-# vector is a list of tuples
 def sendVector(vector):
+
+    '''
+    Sends <vector>, which is a list of tuples,
+    to the parent c++ program
+    '''
     
     # Connect to the socket
     s = socket.socket()
