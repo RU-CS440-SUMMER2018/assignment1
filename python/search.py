@@ -10,15 +10,20 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
     Returns a list of tuples. Each tuple is a pair of integers.
     '''
 
+    # Define the start and goal node
     startState = world.State(initial_i, initial_j)
     goalState = world.State(goal_i, goal_j)
-
     startNode = astar.Node(startState, world.manhattanHeuristic)
     goalNode = astar.Node(goalState, world.manhattanHeuristic)
+
+    # Get environment from file
     environment = readMaze(filename)
 
-    retList = []
+    # Perform A* search
     foundGoal = astar.aStar(startNode, goalNode, environment)
+    
+    # Construct the path
+    retList = []
     while foundGoal:
         fromAction = foundGoal.fromAction
         i = foundGoal.state.i
@@ -28,8 +33,8 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
             foundGoal = fromAction.fromNode
         else:
             foundGoal = None
-    
     retList.reverse()
+
     return retList
 
 def readMaze(filename):
