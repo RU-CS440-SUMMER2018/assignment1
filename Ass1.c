@@ -794,6 +794,8 @@ App[0]='u';
 //COORDINATES START 0 - n-1!!!!!!!!!!
 char* U = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,2);
 
+ResetBoard(_2DARRAY_);
+
 ChangeC=startc+1;
 
 //return 0;
@@ -808,6 +810,8 @@ App[0]='r';
 //COORDINATES START 0 - n-1!!!!!!!!!!
 char* R = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App,2);
 
+ResetBoard(_2DARRAY_);
+
 ChangeR=startr+1;
 
 free(App);
@@ -819,6 +823,8 @@ App[0]='d';
 
 //COORDINATES START 0 - n-1!!!!!!!!!!
 char* D = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,2);
+
+ResetBoard(_2DARRAY_);
 
 ChangeC=startc-1;
 
