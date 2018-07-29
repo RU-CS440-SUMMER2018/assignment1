@@ -18,6 +18,8 @@ int Boundr;
     
 void PrintBoard(char ** _BOARD_);
 
+void ResetBoard(char ** _BOARD_);
+
 //Min Path of all possible path choices up down left right.
 //int MinPath(int Startr, int Startc, int Endr, int Endc);
 
@@ -111,9 +113,11 @@ void DeleteTree(TraceTree* TT,int Level);
 //Print Tree PReorder Up Right Down Left... Important, because these are all adjecent actions to eachother!!!
 void PrintTree(TraceTree* TT, int Level);
 
-char* Trace(char** ENV,int Startr,int Startc, int Endr, int Endc,char* App);
+int IndicateCompletePath = 0;
 
-int* TraceBack(char* App, int Startr, int Startc);
+char* Trace(char** ENV,int Startr,int Startc, int Endr, int Endc,char* App,int Size);
+
+int* TraceBack(char* App, int Startr, int Startc, char** ENV);
 
 Queue_of_Paths* Q = NULL;
 
@@ -211,6 +215,10 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     Delete(Q3);
 
     Delete(Q4);
+
+    //Delete(Q);
+
+    //Delete(Q);
 // END MEM TEST////////////////////////////////////////////
 
 
@@ -287,7 +295,18 @@ Queue_of_Paths* Q5 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
     SetUpBoard(S,_BOARD_);
    
     PrintBoard(_BOARD_);
-   
+  
+
+    //36-1,36-1,36-1,2-1
+    int I = CompleteHeuristic(35, 35, 35, 1,_BOARD_);
+
+
+    printf("\nCOMPLETE PATH FOUND: %d \n",I);
+
+    PrintTree(T,0);
+
+    PrintQueue();
+ 
     //FIND OUT WHERE GOAL IS
     
     /*
@@ -484,6 +503,28 @@ void PrintBoard(char ** _2DBOARD_){
     return;
 }
 
+void ResetBoard(char ** _2DBOARD_){
+int row = 0;
+    int column = 0;
+
+    printf("\n RESET 2D BOARD TO UNVISITED \n");
+
+    while(row<Boundr){
+        column = 0;
+        while(column<Boundc){
+            //printf("%c ",_2DBOARD_[row][column]);
+            if(_2DBOARD_[row][column]=='X'){
+	    _2DBOARD_[row][column]='1';
+ 	    }
+	    column = column+1;
+        }
+            row = row+1;
+            //printf("\n");
+    }
+
+ PrintBoard(_2DBOARD_);
+return;
+}
 void DeleteBoard(char** _2DBOARD_){
     
     int i=0;
@@ -528,8 +569,9 @@ Queue_of_Paths*Q2 =Q;//(Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 while(Q2!=NULL){
 
 if(Q2->Next==NULL){
-printf("\nAPPEND ENTRY\n");
-/*Q2->Next=(Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+printf("\nAPPEND ENTRY:[%d,%d] ,[%d,%d] , %s\n",Q1->StartR,Q1->StartC,Q1->EndR,Q1->EndC,Q1->ListN);
+/*
+Q2->Next=(Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 Q2->Next->StartR = Q1->StartR;
 Q2->Next->StartC = Q1->StartC;
 Q2->Next->EndR = Q1->EndR;
@@ -540,6 +582,7 @@ Q2->Next=Q1;
 Q2->Next->Next=NULL;
 return;
 }
+
 
 Queue_of_Paths* Q3 = Q2->Next;
 
@@ -652,7 +695,7 @@ while(Q1!=NULL){
 printf("\n%d:",i);
 printf("Start Row:%d\nStart Column:%d\n",Q1->StartR,Q1->StartC);
 printf("Goal Row:%d\nGoal Column:%d\n",Q1->EndR,Q1->EndC);
-printf("SEQ:%s\n",Q1->ListN);
+printf("SEQ:%s (SIZE:%d) \n",Q1->ListN,(int)strlen(Q1->ListN));
 
 Queue_of_Paths* Q2 = Q1->Next;
 
@@ -709,7 +752,7 @@ Q1->EndC = goalc;
 //Don't Have to Move
 Q1->ListN = (char*)malloc(2*sizeof(char));
 bzero((Q1->ListN),2);
-(Q1->ListN)[0]=' ';
+(Q1->ListN)[0]='\0';
 
 Insert(Q1);
 return 1;
@@ -744,59 +787,71 @@ int ChangeC;
 //TRACE FUNCTIION WILL EXHAUST ALL PATH POSSIBILITIES, RECURSIVELY, GIVEN A STARTING DIRECTION, END coord, and ENV
 
 ChangeR=startr-1;
-char* App = (char*)malloc(sizeof(char));
+char* App = (char*)malloc(2*sizeof(char));
 
-bzero(App,1);
+bzero(App,2);
 App[0]='u';
-char* U = NULL;
-strcpy(U,Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App));
+//COORDINATES START 0 - n-1!!!!!!!!!!
+char* U = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,2);
 
 ChangeC=startc+1;
 
+//return 0;
+
 free(App);
 App=NULL;
-App = (char*)malloc(sizeof(char));
+App = (char*)malloc(2*sizeof(char));
 
-bzero(App,1);
+bzero(App,2);
 App[0]='r';
-char* R = NULL; 
-strcpy(R,Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App));
+
+//COORDINATES START 0 - n-1!!!!!!!!!!
+char* R = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App,2);
 
 ChangeR=startr+1;
 
 free(App);
 App=NULL;
-App = (char*)malloc(sizeof(char));
+App = (char*)malloc(2*sizeof(char));
 
-bzero(App,1);
+bzero(App,2);
 App[0]='d';
-char* D = NULL;
-strcpy(D,Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App));
+
+//COORDINATES START 0 - n-1!!!!!!!!!!
+char* D = Trace(_2DARRAY_,ChangeR,startc,goalr,goalc,App,2);
 
 ChangeC=startc-1;
 
 free(App);
 App=NULL;
-App = (char*)malloc(sizeof(char));
+App = (char*)malloc(2*sizeof(char));
 
-bzero(App,1);
+bzero(App,2);
 App[0]='l';
-char* L = NULL; 
-strcpy(L,Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App));
+//COORDINATES START 0 - n-1!!!!!!!!!!
+char* L = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App,2);
+
 //L = Trace(_2DARRAY_,startr,ChangeC,goalr,goalc,App);
+free(App);
+App=NULL;
+
 printf("\nUP PATH:%s\nRIGHT PATH:%s\n\nDOWN PATH:%s\nLEFT PATH:%s\n",U==NULL? "NULL":U,R==NULL? "NULL":R,D==NULL? "NULL":D,L==NULL? "NULL":L);
 
+PrintQueue();
+
+/*
 if(U==NULL&&R==NULL&&D==NULL&&L==NULL){
 //NO PATH FOUND!
 return 0;
 }
-
+*/
 //RETURN NULL if NO PATH..
 //IF ALL = NULL, NO PATH POSSIBLE!
 //ELSE, FOUND [a1,,,,an] Path
 
 //Then, Scan for Duplicate Path..
-Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+
+/*Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
 
 Q1->StartR = startr;
 Q1->StartC = startc;
@@ -804,15 +859,19 @@ Q1->EndR = goalr;
 Q1->EndC = goalc;
 //FIND MIN OF THESE PATHS...
 //Q1->ListN = Min {PATHS}
-
-Q1 = (Queue_of_Paths*)CheckDuplicatePath(Q1);
-
+//
+//IF Not Duplicate Path
+if(CheckDuplicatePath(Q1)==NULL){
 //Then, Insert Path into Queue
 Insert(Q1);
 //Then return 1 IFF found goal (Somehow)
-
+}
+*/
 //IF EXHAUSTED ALL PATH OPTIONS, exit while and quit
 //}
+
+ResetBoard(_2DARRAY_);
+
 
 //If Not a Path to Goal
 return 1;
@@ -932,45 +991,125 @@ return;
 ////D = row+1
 ////L = Column -1
 ////R = Column +1
-char* Trace(char** ENV,int Startr,int Startc, int Endr, int Endc,char* App){
+char* Trace(char** ENV,int Startr,int Startc, int Endr, int Endc,char* App,int Size){
 //Given Start Coord and End coord....
 //START at ENV
 
-printf("\n COORD:%d,%d",Startr,Startc);
+if(Size==2){
+//Start Size
 
-if(ENV==NULL||(Startr<0||Startc<0||Endr<0||Endc<0)){
+ENV[Startr][Startc]='X';
+
+}
+
+PrintBoard(ENV);
+
+printf("\n COORD START:%d,%d, Char:%c,Char interted:%c",Startr,Startc,ENV[Startr][Startc],ENV[Startc][Startr]);
+printf("\n COORD END:%d,%d, Char:%c Char inverted:%c",Endr,Endc,ENV[Endr][Endc],ENV[Endc][Endr]);
+
+if(ENV==NULL||(Startr<0||Startc<0||Endr<0||Endc<0||Startr>Boundr-1||Startc>Boundc-1||Endr>Boundr-1||Endc>Boundc-1)||(ENV[Endr][Endc]!='.')){
 printf("\nInput Trace Error\n");
 return NULL;
 }
 
 if(Startr==Endr&&Startc==Endc){
 //Complete Path Found
+
 return App;
+
 }
 
 //Where You Start?
 //Start by ORDER U,R,D,L, Recursive!
 //Check Up
-if(Startr!=0){
+if(Startr>0){
 if(ENV[Startr-1][Startc]=='1'){
 //May Proceed Here
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'u';
-Trace(ENV,Startr-1, Startc, Endr, Endc,App);
+if(ENV[Startr-1][Startc]!='X'){
+//MARK AS VISITED!
+ENV[Startr-1][Startc]='X';
+////
+Size = Size+1;
+
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"u");
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'u';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+Trace(ENV,Startr-1, Startc, Endr, Endc,App2,Size);
+
+}
+else{
+printf("\nALREADY VISITED [%d,%d]\n",Startr-1,Startc);
+}
 }
 else{
 //Try Another Way...
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr-1][Startc]=='.'){
 //Sequence of Steps
+Size = Size+1;
 
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'u';
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+//App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"u");
+
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'u';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+char* App3 = (char*)malloc(Size*sizeof(char));
+bzero(App3,Size);
+strncpy(App3,App2,Size);
 //Trace(ENV,Startr-1, Startc, Endr, Endc,App);
 
-return App;
+
+Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+
+int* V = TraceBack(App3, Startr, Startc, ENV);
+
+printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
+Q1->StartR = V[0];
+Q1->StartC = V[1];
+free(V);
+V=NULL;
+Q1->EndR = Endr;
+Q1->EndC = Endc;
+Q1->ListN = App3;
+//FIND MIN OF THESE PATHS...
+///Q1->ListN = Min {PATHS}
+////
+////IF Not Duplicate Path
+if(CheckDuplicatePath(Q1)==NULL){
+////Then, Insert Path into Queue
+Insert(Q1);
+
+}
+else{
+//free(Q1->ListN);
+free(Q1);
+Q1=NULL;
+}
+
+PrintQueue();
+
+//exit(0);
+
+return App3;
 //
 }
 ///////////////////////////////////////////////////////////////GOOOOOOOOOOOOOOOAAAAAOL
@@ -984,27 +1123,101 @@ else{
 //Try Another Way...
 //CANT GO UP ANY MORE
 printf("\nCANT GO UP ANY MORE");
+
 }
 //Check Right
-if(Startc<Boundc){
+if(Startc<Boundc-1){
 if(ENV[Startr][Startc+1]=='1'){
-//May Proceed Here
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'r';
 
-Trace(ENV,Startr, Startc+1, Endr, Endc,App);
+
+if(ENV[Startr][Startc+1]!='X'){
+//May Proceed Here
+ENV[Startr][Startc+1]='X';
+
+Size = Size+1;
+
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"r");
+
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'r';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+Trace(ENV,Startr, Startc+1, Endr, Endc,App2,Size);
 //
+}
+else{
+printf("\nALREADY VISITED [%d,%d]\n",Startr,Startc+1);
+}
+
+
 }
 else{
 //Try Another Way...
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr][Startc+1]=='.'){
 //Sequence of Steps
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'r';
-return App;
+Size = Size+1;
+
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"r");
+
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'r';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+char* App3 = (char*)malloc(Size*sizeof(char));
+bzero(App3,Size);
+strncpy(App3,App2,Size);
+
+Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+
+int* V = TraceBack(App3, Startr, Startc, ENV);
+
+printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
+Q1->StartR = V[0];
+Q1->StartC = V[1];
+free(V);
+V=NULL;
+Q1->EndR = Endr;
+Q1->EndC = Endc;
+Q1->ListN = App3;
+//FIND MIN OF THESE PATHS...
+/////Q1->ListN = Min {PATHS}
+//////
+//////IF Not Duplicate Path
+if(CheckDuplicatePath(Q1)==NULL){
+//////Then, Insert Path into Queue
+Insert(Q1);
+//
+}
+else{
+//free(Q1->ListN);
+free(Q1);
+Q1=NULL;
+}
+//
+//
+
+PrintQueue();
+
+//exit(0);
+
+return App3;
 //
 }
 ///////////////////////////////////////////////////////////////GOOOOOOOOOOOOOOOAAAAAOL
@@ -1012,6 +1225,8 @@ return App;
 ////CANT GO RIGHT ANY MORE
 //
 printf("\nCANT GO RIGHT ANY MORE (DEAD END)");
+
+
 //
 }
 //
@@ -1024,24 +1239,94 @@ printf("\nCANT GO RIGHT ANY MORE");
 
 }
 //Check Down
-if(Startr<Boundr){
+if(Startr<Boundr-1){
 if(ENV[Startr+1][Startc]=='1'){
+//
+if(ENV[Startr+1][Startc]!='X'){
 //May Procees Here
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'd';
-Trace(ENV,Startr+1, Startc, Endr, Endc,App);
+ENV[Startr+1][Startc]='X';
 
+Size = Size+1;
+
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"d");
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'd';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+Trace(ENV,Startr+1, Startc, Endr, Endc,App2,Size);
+}
+else{
+printf("\nALREADY VISITED [%d,%d]\n",Startr+1,Startc);
+}
+//
 }
 else{
 //Try Another Way...
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr+1][Startc]=='.'){
 //Sequence of Steps
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'd';
-return App;
+Size = Size+1;
+
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"d");
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'd';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+char* App3 = (char*)malloc(Size*sizeof(char));
+bzero(App3,Size);
+strncpy(App3,App2,Size);
+
+Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+
+int* V = TraceBack(App3, Startr, Startc, ENV);
+
+printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
+Q1->StartR = V[0];
+Q1->StartC = V[1];
+free(V);
+V=NULL;
+Q1->EndR = Endr;
+Q1->EndC = Endc;
+Q1->ListN = App3;
+//FIND MIN OF THESE PATHS...
+///////Q1->ListN = Min {PATHS}
+////////
+////////IF Not Duplicate Path
+if(CheckDuplicatePath(Q1)==NULL){
+////////Then, Insert Path into Queue
+Insert(Q1);
+////
+}
+else{
+//free(Q1->ListN);
+free(Q1);
+Q1=NULL;
+}
+////
+
+
+PrintQueue();
+
+//exit(0);
+
+
+return App3;
 //
 }
 ///////////////////////////////////////////////////////////////GOOOOOOOOOOOOOOOAAAAAOL
@@ -1057,29 +1342,102 @@ else{
 
 //Try Another Way...
 ////CANT GO DOWN ANY MORE
-
 printf("\nCANT GO DOWN ANY MORE");
 
 }
 //Check Left
-if(Startc!=0){
+if(Startc>0){
 if(ENV[Startr][Startc-1]=='1'){
-//May Procede Here
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'l';
-Trace(ENV,Startr-1, Startc-1, Endr, Endc,App);
 
+if(ENV[Startr][Startc-1]!='X'){
+//MARK AS VISITED!
+ENV[Startr][Startc-1]='X';
+//MARKED VISIT!!!
+
+//PrintBoard(ENV);
+
+//return NULL;
+
+//May Procede Here
+Size = Size+1;
+
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"l");
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'l';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+Trace(ENV,Startr, Startc-1, Endr, Endc,App2,Size);
+
+}
+else{
+printf("\nALREADY VISITED [%d,%d]\n",Startr,Startc-1);
+}
 
 }
 else{
 ///////////////////////////////////////////////////////////FOUND GOAL
 if(ENV[Startr][Startc-1]=='.'){
 //Sequence of Steps
-App = (char*)realloc(App,((strlen(App)+2)*sizeof(char)));
-App[strlen(App)-1] = '\0';
-App[strlen(App)-2] = 'l';
-return App;
+Size = Size+1;
+
+char App2[Size];
+bzero(App2,Size);
+strncpy(App2,App,Size);
+App2[Size-1]='\0';
+//App2[Size-2]='u';
+strcat(App2,"l");
+/*
+App = (char*)realloc(App,((Size)*sizeof(char)));
+App[Size-1] = '\0';
+App[Size-2] = 'l';
+*/
+printf("\nAPPENDED PATH:%s",App2);
+
+char* App3 = (char*)malloc(Size*sizeof(char));
+bzero(App3,Size);
+strncpy(App3,App2,Size);
+
+Queue_of_Paths* Q1 = (Queue_of_Paths*)malloc(sizeof(Queue_of_Paths));
+
+int* V = TraceBack(App3, Startr, Startc,ENV);
+
+printf("\n ORIG START : [%d,%d]\n",V[0],V[1]);
+Q1->StartR = V[0];
+Q1->StartC = V[1];
+free(V);
+V=NULL;
+Q1->EndR = Endr;
+Q1->EndC = Endc;
+Q1->ListN = App3;
+//FIND MIN OF THESE PATHS...
+///////Q1->ListN = Min {PATHS}
+////////
+////////IF Not Duplicate Path
+if(CheckDuplicatePath(Q1)==NULL){
+////////Then, Insert Path into Queue
+Insert(Q1);
+////
+}else{
+//free(Q1->ListN);
+free(Q1);
+Q1=NULL;
+}
+////
+//
+
+PrintQueue();
+
+//exit(0);
+
+return App3;
 
 }
 /////////////////////////////////////////////////////////////GOOOOOOOOOOOOOOOAAAAAOL
@@ -1097,15 +1455,25 @@ printf("\nCANT GO LEFT ANY MORE");
 }
 //Remember, if path is dead, don't need to return a pointer... delete pointer and return NULL
 
-printf("\n ALL PATH OPTIONS EXHAUSTED.... \n");
+printf("\n ALL PATH OPTIONS EXHAUSTED... \n");
+
+//Free Failed Path Seq
+
+/*
+if(App!=NULL){
+free(App);
+App=NULL;
+}
+*/
 
 return NULL;
 
 }
 
 
-int* TraceBack(char* S,int Startr, int Startc){
+int* TraceBack(char* S,int Startr, int Startc, char** ENV){
 int i = strlen(S)-1;
+
 while(i>=0){
 
 if(S[i]=='u')
@@ -1123,6 +1491,31 @@ Startc=Startc+1;
 i = i-1;
 }
 
+//Down
+if(ENV[Startr-1][Startc]=='P'){
+
+Startr=Startr-1;
+
+}
+//Right
+else if(ENV[Startr][Startc-1]=='P'){
+
+Startc=Startc-1;
+
+}
+//Up
+else if(ENV[Startr+1][Startc]=='P'){
+
+Startr=Startr+1;
+}
+//Left
+else if(ENV[Startr][Startc+1]=='P'){
+
+Startc = Startc+1;
+
+}
+
+
 int* V = (int*)malloc(2*sizeof(int));
 V[0] = Startr;
 V[1] = Startc;
@@ -1131,11 +1524,12 @@ V[1] = Startc;
 return V;
 }
 
+/*
 void PopulateTree(int Starts, int Startc, char** ENV){
 
 
 }
-
+*/
 
 //Follow Array Trace Given Down Tree until reached
 //TRACE CHAR SEQ IS VERY IMPORTANT!
