@@ -395,7 +395,7 @@ namespace prx
                     "python3",
                     mainPyPath,
                     portStr,
-                    environment_file,
+                    environment_file.c_str(),
                     iiStr,
                     ijStr,
                     giStr,
