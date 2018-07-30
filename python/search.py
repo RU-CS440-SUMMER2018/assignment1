@@ -9,6 +9,10 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
     the rest of the arguments are the initial and goal coordinates.
     
     Returns a list of tuples. Each tuple is a pair of integers.
+    The first tuple represents the (i, j) coordinate of the start
+    state, and the last tuple represents the goal coordinates. The
+    tuple in between are coordinates in order that represents an
+    optimal path from the start state to the goal.
     '''
 
     # Define the start and goal node
