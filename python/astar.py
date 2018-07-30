@@ -36,7 +36,7 @@ class Node:
         else:
             return 0
 
-    def fValue(self, toNode, weight=1):
+    def fValue(self, toNode, weight):
         '''
         Get the value of initial node to this node plus the
         heuristic between this node and <toNode>. The higher
@@ -64,13 +64,15 @@ class Action:
 class NodeQueue:
     '''
     Priority queue based on nodes with the least fValue
-    to <goalNode>
+    to <goalNode>. <heuristicWeight> gives weight to
+    hValue over gValue in fValue.
     '''
-    def __init__(self, goalNode):
+    def __init__(self, goalNode, heuristicWeight):
         self.lst = []
         self.goalNode = goalNode
+        self.heuristicWeight = heuristicWeight
     def push(self, node):
-        heapq.heappush(self.lst, (node.fValue(self.goalNode), node))
+        heapq.heappush(self.lst, (node.fValue(self.goalNode, self.heuristicWeight), node))
     def pop(self):
         return heapq.heappop(self.lst)[1]
     def contains(self, node):
@@ -98,16 +100,18 @@ class NodeQueue:
     def isEmpty(self):
         return len(self.lst) == 0
 
-def aStar(startNode, goalNode, environment):
+def aStar(startNode, goalNode, environment, heuristicWeight):
 
     '''
     Performs A* search from <startNode> to <goalNode>
     in <environment>. Returns a node that is equivalent
     to <goalNode> if the path is found, else returns None.
+    <heuristicWeight> gives a weight to the hValue over
+    the gValue in fValue.
     '''
 
     # Initialize lists
-    openList = NodeQueue(goalNode)
+    openList = NodeQueue(goalNode, heuristicWeight)
     openList.push(startNode)
     closedList = []
 

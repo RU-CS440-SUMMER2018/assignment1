@@ -1,4 +1,5 @@
 import astar
+import config
 
 class State:
     'Represents a state in this envioronment'
@@ -37,7 +38,7 @@ def findActions(node, environment):
         # the maze and are not blocked (a 0)
         try: 
             if (not ij[0] < 0) and (not ij[1] < 0) and environment[ij[0]][ij[1]]:
-                neighborNode = astar.Node(State(ij[0], ij[1]), manhattanHeuristic)
+                neighborNode = astar.Node(State(ij[0], ij[1]), config.heuristicFunction)
                 action = astar.Action(1, node, neighborNode)
                 neighborNode.setFromAction(action)
                 actions.append(action)

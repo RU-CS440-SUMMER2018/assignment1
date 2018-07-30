@@ -1,5 +1,6 @@
 import world
 import astar
+import config
 
 def search(filename, initial_i, initial_j, goal_i, goal_j):
 
@@ -13,14 +14,14 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
     # Define the start and goal node
     startState = world.State(initial_i, initial_j)
     goalState = world.State(goal_i, goal_j)
-    startNode = astar.Node(startState, world.manhattanHeuristic)
-    goalNode = astar.Node(goalState, world.manhattanHeuristic)
+    startNode = astar.Node(startState, config.heuristicFunction)
+    goalNode = astar.Node(goalState, config.heuristicFunction)
 
     # Get environment from file
     environment = readMaze(filename)
 
     # Perform A* search
-    foundGoal = astar.aStar(startNode, goalNode, environment)
+    foundGoal = astar.aStar(startNode, goalNode, environment, config.heuristicWeight)
     
     # Construct the path
     retList = []
