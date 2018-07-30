@@ -7,7 +7,8 @@
     ```bash
     chmod 755 setup.sh && ./setup.sh
     ```
-3. Now watch our program navigate any maze by running the following command
+3. Modify the heuristic values in `$PRACSYS_PATH/python/config.py` to meet your needs
+4. Now watch our program navigate any maze by running the following command
     ```bash
     roslaunch prx_core assignment_1.launch env:="PATH_TO_MAZE_FILE"
     ```
@@ -15,11 +16,23 @@
 
 ## Implementation
 
+### Search
+
 ### Python-C++ Inter-Process Communication
+
+To impletment our program in python and passing the data to and back from c++ to python, we:
+
+1. Listen to a socket in c++
+2. Run the python script, `$PRACSYS_PATH/python/cpp-io.py`, as a child process, passing inputs as arguments
+3. Connect to the c++ socket in python and send back computed output
 
 #### Protocol
 
-cpp-io.py port filename initial_i initial_j goal_i goal_j
+These are the command-line arguments passed to the python program from c++
+
+    cpp-io.py port filename initial_i initial_j goal_i goal_j
+
+The python program sends back a stream of bytes that follows the following protocol:
 
 1. First 4 bytes
     * 32-bit network-byte-order integer
