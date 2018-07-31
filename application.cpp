@@ -316,70 +316,46 @@ namespace prx
 
             std::vector< std::pair<int,int> > path;
 
-            int server_fd, new_socket;
-            struct sockaddr_in address;
-            int addrlen = sizeof(address);
-            address.sin_family = AF_INET;
-            address.sin_addr.s_addr = INADDR_ANY;
-            address.sin_port = 0;
-            
-            // Creating socket file descriptor
-            if (!(server_fd = socket(AF_INET, SOCK_STREAM, 0))) {
-                perror("error creating socket");
-                exit(EXIT_FAILURE);
-            }
-            
-            // Bind socket to random port
-            if (bind(server_fd, (struct sockaddr *) &address, addrlen)) {
-                perror("error binding to random port");
-                exit(EXIT_FAILURE);
+            int pyPipe[2];
+            if (pipe(pyPipe)) {
+                perror("Error creating pipe");
             }
 
-            // Save randomly selected port
-            if (getsockname(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) {
-                perror("error saving random port");
-                exit(EXIT_FAILURE);
-            }
-            int port = ntohs(address.sin_port);
+            int readFd = pyPipe[0];
+            int writeFd = pyPipe[1];
             
             if(fork()) {
 
-                // Listen on socket
-                if (listen(server_fd, 1) < 0) {
-                    perror("error listening to port");
-                    exit(EXIT_FAILURE);
-                }
-
-                // Accept socket connection
-                if ((new_socket = accept(server_fd, (struct sockaddr *) &address, (socklen_t *) &addrlen)) < 0) {
-                    perror("error accepting connection");
-                    exit(EXIT_FAILURE);
-                }
+                close(writeFd);
+                int readFd = pyPipe[0];
 
                 // Get number of pairs
                 unsigned int numPairs;
-                read(new_socket, &numPairs, 4);
+                read(readFd, &numPairs, 4);
                 numPairs = ntohl(numPairs);
 
                 // Fill path vector
                 for (unsigned int i = 0; i < numPairs; i++) {
                     std::pair<int,int> tuple;
-                    read(new_socket, &tuple.first, 4);
-                    read(new_socket, &tuple.second, 4);
+                    read(readFd, &tuple.first, 4);
+                    read(readFd, &tuple.second, 4);
                     tuple.first = ntohl(tuple.first);
                     tuple.second = ntohl(tuple.second);
                     path.push_back(tuple);
                 }
 
+                close(readFd);
                 wait(NULL);
 
             } else {
+
+                close(readFd);
 
                 // Create argument strings
                 char mainPyPath[PATH_MAX];
                 sprintf(mainPyPath, "%s/python/cpp-io.py", getenv("PRACSYS_PATH"));
                 char portStr[10];
-                sprintf(portStr, "%d", port);
+                sprintf(portStr, "%d", writeFd);
                 char iiStr[10];
                 sprintf(iiStr, "%d", initial_i);
                 char ijStr[10];
