@@ -18,6 +18,16 @@
 
 ### Search
 
+We implemented an A* Search algorithim that finds an optimal path from start to goal. You can see the algorithm implemented in the `aStar()` function in `astar.py`.
+
+`cpp-io.py` calls `search()` in `search.py` passing in appropriate arguments it got from the c++ program. `cpp-io.py` translates and sends `search()`'s return value back to the c++ program. `search()` defines the start and goal nodes, gets the enviornment from the file, calls `aStar()`, and constructs a path list from `aStar()`'s return value.
+
+All files and functions are well commented.
+
+* `cpp-io.py` has code that is ralated to communicating with c++
+* `search.py` creates an abstraction (ie the `search()` fucntion is similar to the `plan()` function in `application.cpp`)
+* `astart
+
 ### Python-C++ Inter-Process Communication
 
 To impletment our program in python and passing the data to and back from c++ to python, we:
