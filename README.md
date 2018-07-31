@@ -34,15 +34,15 @@ All files and functions are well commented so you can read them to understand th
 
 To impletment our program in python and passing the data to and back from c++ to python, we:
 
-1. Listen to a socket in c++
+1. Create a pipe in c++
 2. Run the python script, `$PRACSYS_PATH/python/cpp-io.py`, as a child process, passing inputs as arguments
-3. Connect to the c++ socket in python and send back computed output
+3. Write data to the pipe to send back computed output
 
 #### Protocol
 
 These are the command-line arguments passed to the python program from c++
 
-    cpp-io.py port filename initial_i initial_j goal_i goal_j
+    cpp-io.py write_fd filename initial_i initial_j goal_i goal_j
 
 The python program sends back a stream of bytes that follows the following protocol:
 
