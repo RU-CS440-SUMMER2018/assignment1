@@ -1,5 +1,6 @@
 import heapq
 import world
+import report
 
 class Node:
     
@@ -124,6 +125,9 @@ def aStar(startNode, goalNode, environment, heuristicWeight):
         if currentNode == goalNode:
             return currentNode
         closedList.append(currentNode)
+
+        # Add node coordinates to be reported
+        report.addExpansion((currentNode.state.i, currentNode.state.j))
 
         # Go through all actions of the node
         for action in world.findActions(currentNode, environment):

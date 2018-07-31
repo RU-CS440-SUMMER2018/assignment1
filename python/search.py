@@ -1,6 +1,7 @@
 import config
 import world
 import astar
+import report
 
 def search(filename, initial_i, initial_j, goal_i, goal_j):
 
@@ -39,6 +40,9 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
         else:
             foundGoal = None
     retList.reverse()
+
+    # Report the path
+    report.report(filename, retList)
 
     return retList
 
