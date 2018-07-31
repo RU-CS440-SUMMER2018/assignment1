@@ -140,7 +140,7 @@ def aStar(startNode, goalNode, environment, heuristicWeight):
                 # new values are better than the old ones
                 else:
                     oldNeighborNode = openList.find(neighborNode)
-                    if neighborNode.fValue(goalNode) < oldNeighborNode.fValue(goalNode):
+                    if neighborNode.fValue(goalNode, heuristicWeight) < oldNeighborNode.fValue(goalNode, heuristicWeight):
                         openList.update(neighborNode)
 
     # Return if goal not found

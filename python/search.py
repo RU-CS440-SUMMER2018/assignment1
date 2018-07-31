@@ -1,6 +1,6 @@
+import config
 import world
 import astar
-import config
 
 def search(filename, initial_i, initial_j, goal_i, goal_j):
 
