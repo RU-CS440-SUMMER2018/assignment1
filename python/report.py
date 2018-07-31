@@ -3,8 +3,8 @@ import config
 
 expansions = []
 
-def addExpansion(expansion):
-    expansions.append(expansion)
+def addExpansion(node):
+    expansions.append((node.state.i, node.state.j))
 
 def getCoordinateString(node):
     i = node[0]

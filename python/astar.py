@@ -127,7 +127,7 @@ def aStar(startNode, goalNode, environment, heuristicWeight):
         closedList.append(currentNode)
 
         # Add node coordinates to be reported
-        report.addExpansion((currentNode.state.i, currentNode.state.j))
+        report.addExpansion(currentNode)
 
         # Go through all actions of the node
         for action in world.findActions(currentNode, environment):
