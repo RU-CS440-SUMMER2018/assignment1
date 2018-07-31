@@ -316,18 +316,18 @@ namespace prx
 
             std::vector< std::pair<int,int> > path;
 
+            // Create pipe
             int pyPipe[2];
             if (pipe(pyPipe)) {
                 perror("Error creating pipe");
             }
-
             int readFd = pyPipe[0];
             int writeFd = pyPipe[1];
             
             if(fork()) {
-
+                
+                // Close writeFd for c++
                 close(writeFd);
-                int readFd = pyPipe[0];
 
                 // Get number of pairs
                 unsigned int numPairs;
@@ -344,11 +344,13 @@ namespace prx
                     path.push_back(tuple);
                 }
 
+                // Clean up
                 close(readFd);
                 wait(NULL);
 
             } else {
 
+                // Close readFd for python
                 close(readFd);
 
                 // Create argument strings
