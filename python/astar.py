@@ -9,6 +9,9 @@ class Node:
 
     <state> is the state at this node.
 
+    <heuristicWeight> gives weight to the hValue over
+    gValue when computing the fValue.
+
     <heuristicFucntion> is a function used to measure
     the heristics. (node) => int. Must return
     the heuristic value of <node>.
@@ -26,11 +29,11 @@ class Node:
         self.heuristicWeight = heuristicWeight
 
     def hValue(self):
-        'Get the heuristic value between this node and <toNode>'
+        'Get the heuristic value for this node'
         return self.heuristicFucntion(self)
 
     def gValue(self):
-        'Get the value from the initial node to this node'
+        'Get the cost from the initial node to this node'
         if self.fromAction:
             return self.fromAction.cost + self.fromAction.fromNode.gValue()
         else:
@@ -38,10 +41,8 @@ class Node:
 
     def fValue(self):
         '''
-        Get the value of initial node to this node plus the
-        heuristic between this node and <toNode>. The higher
-        the value of weight is, less priority will be given
-        to the heuristic
+        Get the cost of initial node to this node plus the
+        heuristic value of this node
         '''
         return self.gValue() + (self.heuristicWeight * self.hValue())
 
