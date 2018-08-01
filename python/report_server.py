@@ -41,6 +41,11 @@ def exitIfDone():
         exit()
     lock.release()
 
+def printTupList(lst, label):
+    for tup in lst:
+        label += ' -> ' + str(tup)
+    print(label + '\n')
+
 def savePath(mazeName, heuristicName, pathList, expandedNodesList):
     key = getMazeKey(mazeName, heuristicName)
     try:
@@ -52,9 +57,12 @@ def savePath(mazeName, heuristicName, pathList, expandedNodesList):
         mazeDict[key][0].append(pathList)
         mazeDict[key][1].append(expandedNodesList)
         pathsCompleted = len(mazeDict[key][0])
-        print(key)
+        print(key + '\n')
+        printTupList(pathList, 'Path (' + str(len(pathList)) + ' nodes)')
+        printTupList(expandedNodesList, 'Expanded nodes (' + str(len(expandedNodesList)) + ' nodes)')
         print(str(pathsCompleted) + ' paths completed')
-        print(str(pathsPerMaze - pathsCompleted) + ' paths left\n')
+        print(str(pathsPerMaze - pathsCompleted) + ' paths left')
+        print('\n================================================\n')
     else:
         print(str(pathsCompleted) + ' paths already completed, move onto the next maze')
         numMazeCompleted = 0
