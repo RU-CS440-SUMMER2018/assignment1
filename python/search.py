@@ -19,8 +19,9 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
     # Define the start and goal node
     startState = world.State(initial_i, initial_j)
     goalState = world.State(goal_i, goal_j)
-    startNode = astar.Node(startState, config.heuristicFunction)
-    goalNode = astar.Node(goalState, config.heuristicFunction)
+    startNode = astar.Node(startState, config.heuristicWeight)
+    goalNode = astar.Node(goalState, config.heuristicWeight)
+    startNode.heuristicFucntion = goalNode.heuristicFucntion = config.heuristicFunction(goalNode)
 
     # Get environment from file
     environment = readMaze(filename)

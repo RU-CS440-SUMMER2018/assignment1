@@ -8,19 +8,26 @@ class State:
         self.j = j
     def __eq__(self, other):
         return (self.i == other.i) and (self.j == other.j)
+    def __str__(self):
+        return '(' + str(self.i) + ', ' + str(self.j) + ')'
 
-def manhattanHeuristic(fromNode, toNode):
+def manhattanHeuristic(goalNode):
     '''
-    Hueristic that measures the manhattan distence from
-    <fromNode> to <toNode> and returns it
+    Returns a hueristic function ((node) => int)
+    that measures the manhattan distence from
+    <node> to <goalNode> and returns it
     '''
-    return abs(toNode.state.i - fromNode.state.i) + abs(toNode.state.j - fromNode.state.j)
+    def heuristic(node):
+        return abs(goalNode.state.i - node.state.i) + abs(goalNode.state.j - node.state.j)
+    return heuristic
 
-def zeroHeuristic(fromNode, toNode):
-    'This hueristic always returns 0'
-    return 0
+def zeroHeuristic(goalNode):
+    'Returns a hueristic function ((node) => int) that always returns 0'
+    def heuristic(node):
+        return 0
+    return heuristic
 
-def findActions(node, environment):
+def findActions(node, environment, goalNode, heuristicWeight):
     
     '''
     Finds all the actions <node> can make
@@ -29,18 +36,18 @@ def findActions(node, environment):
     '''
 
     actions = []
-    i = node.state.i
-    j = node.state.j
+    ni = node.state.i
+    nj = node.state.j
 
-    for ij in [(i+1,j),(i-1,j),(i,j+1),(i,j-1)]:
+    for (i, j) in [(ni+1,nj),(ni-1,nj),(ni,nj+1),(ni,nj-1)]:
 
         # Save actions that lead you to nodes that are within
         # the maze and are not blocked (a 0)
         try: 
-            if (not ij[0] < 0) and (not ij[1] < 0) and environment[ij[0]][ij[1]]:
-                neighborNode = astar.Node(State(ij[0], ij[1]), config.heuristicFunction)
+            if (not i < 0) and (not j < 0) and environment[i][j]:
+                neighborNode = astar.Node(State(i, j), heuristicWeight, config.heuristicFunction(goalNode))
                 action = astar.Action(1, node, neighborNode)
-                neighborNode.setFromAction(action)
+                neighborNode.fromAction = action
                 actions.append(action)
         except IndexError:
             continue

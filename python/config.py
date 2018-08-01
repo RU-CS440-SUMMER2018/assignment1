@@ -1,8 +1,8 @@
 import world
 
-# Set this variable to a heuristic function of your choice.
-# A heuristic function must follow: (fromNode, toNode) => int.
-# Available heuristic functions are: world.manhattanHeuristic
+# Set this variable to a heuristic function builder of your choice.
+# A heuristic function builder must follow: (goalNode) => (node) => int.
+# Available heuristic functions builders are: world.manhattanHeuristic
 # and world.zeroHeuristic.
 heuristicFunction = world.manhattanHeuristic
 
