@@ -1,7 +1,12 @@
 import os
 import config
+import socket
+import sys
 
+port = 8080
 expansions = []
+
+# print('test')
 
 def addExpansion(node):
     expansions.append((node.state.i, node.state.j))
@@ -15,29 +20,23 @@ def getIjString(i, j):
     return '(' + str(i) + ', ' + str(j) + ')'
 
 def report(mazeFilePath, path):
-
-    mazeFileName = mazeFilePath.split('/')[-1]
-    reportFilePath = os.environ['PRACSYS_PATH'] \
-        + '/' + 'report_' + config.heuristicFunction.__name__ \
-        + '_' + 'weight' + str(config.heuristicWeight) + '_' + mazeFileName
-    file = open(reportFilePath, 'a')
-
-    startTuple = path[0]
-    goalTuple = path[-1]
-
-    file.write('Start: ' + getCoordinateString(startTuple) + '\n')
-    file.write('Goal: ' + getCoordinateString(goalTuple) + '\n')
-
-    file.write('Path')
-    for coordinate in path:
-        file.write(' -> ' + getCoordinateString(coordinate))
-    file.write('\n\nNumber of steps: ' + str(len(path)))
-
-    file.write('\n\nExpanded nodes')
-    for coordinate in expansions:
-        file.write(' -> ' + getCoordinateString(coordinate))
-    file.write('\n\nNumber of expanded nodes: ' + str(len(expansions)))
-
-    file.write('\n\n================================================\n\n')
-    file.close()
     
+    try:
+        sock = socket.create_connection(('localhost', 8080))
+        mazeFileName = mazeFilePath.split('/')[-1]
+        sendString(sock, mazeFileName)
+        sendString(sock, config.heuristicFunction.__name__)
+        sendIntTupList(sock, path)
+        sendIntTupList(sock, expansions)
+    except ConnectionRefusedError:
+        pass
+
+def sendString(sock, string):
+    sock.send(socket.htonl(len(string)).to_bytes(4, sys.byteorder))
+    sock.send(string.encode())
+
+def sendIntTupList(sock, lst):
+    sock.send(socket.htonl(len(lst)).to_bytes(4, sys.byteorder))
+    for (int1, int2) in lst:
+        sock.send(socket.htonl(int1).to_bytes(4, sys.byteorder))
+        sock.send(socket.htonl(int2).to_bytes(4, sys.byteorder))
