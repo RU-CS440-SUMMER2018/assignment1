@@ -23,8 +23,7 @@ def report(mazeFilePath, path):
     
     try:
         sock = socket.create_connection(('localhost', 8080))
-        mazeFileName = mazeFilePath.split('/')[-1]
-        sendString(sock, mazeFileName)
+        sendString(sock, mazeFilePath)
         sendString(sock, config.heuristicFunction.__name__)
         sendIntTupList(sock, path)
         sendIntTupList(sock, expansions)

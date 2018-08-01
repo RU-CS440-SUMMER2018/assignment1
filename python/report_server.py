@@ -8,64 +8,65 @@ import sys
 sock = socket.socket()
 sock.bind(('localhost', report.port))
 sock.listen(10)
-
 lock = threading.Lock()
+
 mazeDict = {}
-numberOfMazes = 8
-pathsPerMaze = 10
+numberOfMazes = int(sys.argv[1])
+pathsPerMaze = int(sys.argv[2])
+reportFile = sys.argv[3]
 
 def exitIfDone():
-
-    lock.acquire()
-    
+    lock.acquire() 
     done = False
     if len(mazeDict) == numberOfMazes:
         done = True
         for key in mazeDict:
-            if len(mazeDict[key][0] < pathsPerMaze):
+            if len(mazeDict[key][0]) < pathsPerMaze:
                 done = False
                 break
-
     if done:
-
-        for key in mazeDict:
-            numInPath = 0
-            numExpanded = 0
-            for path in mazeDict[key][0]:
-                numInPath += len(path)
-            for expanded in mazeDict[key][1]:
-                numExpanded += len(expanded)
-            print(key)
-            print('Number of nodes in 10 paths: ' + str(numInPath))
-            print('Number of expanded nodes in 10 paths: ' + str(numExpanded))
-
+        with open(reportFile, 'w') as file:
+            for key in mazeDict:
+                numInPath = 0
+                numExpanded = 0
+                for path in mazeDict[key][0]:
+                    numInPath += len(path)
+                for expanded in mazeDict[key][1]:
+                    numExpanded += len(expanded)
+                file.write(key)
+                file.write('\nNumber of nodes in ' + str(pathsPerMaze) + ' paths: ' + str(numInPath))
+                file.write('\nNumber of expanded nodes in ' + str(pathsPerMaze) + ' paths: ' + str(numExpanded) + '\n\n')
+                print('The report has been saved as: ' + reportFile)
         sock.close()
         exit()
-        
-    else:
-        for key in mazeDict:
-            numPaths = len(mazeDict[key][0])
-            print(key)
-            print('Paths completed: ' + str(numPaths))
-
     lock.release()
 
-def savePath(mazeName, heuristicName, heuristicWeight, pathList, expandedNodesList):
-
-    key = getMazeKey(mazeName, heuristicName, heuristicWeight)
-
+def savePath(mazeName, heuristicName, pathList, expandedNodesList):
+    key = getMazeKey(mazeName, heuristicName)
     try:
         mazeDict[key]
     except KeyError:
         mazeDict[key] = ([], [])
+    pathsCompleted = len(mazeDict[key][0])
+    if pathsCompleted < pathsPerMaze:
+        mazeDict[key][0].append(pathList)
+        mazeDict[key][1].append(expandedNodesList)
+        pathsCompleted = len(mazeDict[key][0])
+        print(key)
+        print(str(pathsCompleted) + ' paths completed')
+        print(str(pathsPerMaze - pathsCompleted) + ' paths left\n')
+    else:
+        print(str(pathsCompleted) + ' paths already completed, move onto the next maze')
+        numMazeCompleted = 0
+        for key in mazeDict:
+            if len(mazeDict[key][0]) == pathsPerMaze:
+                numMazeCompleted += 1
+        print(str(numMazeCompleted) + ' mazes completed')
+        print(str(numberOfMazes - numMazeCompleted) + ' mazes left\n')
 
-    mazeDict[key][0].append(pathList)
-    mazeDict[key][1].append(expandedNodesList)
-
-
-def getMazeKey(mazeName, heuristicName, heuristicWeight):
+def getMazeKey(mazeName, heuristicName):
     return 'Maze: ' + mazeName + '\nHeuristic: ' \
-        + heuristicName + '\nWeight: ' + str(heuristicWeight)
+        + heuristicName + '\nWeight: ' + str(config.heuristicWeight)
 
 def getString(sock):
     'Get a string from <sock> as defined by our protocol'
@@ -85,14 +86,11 @@ def getIntTupList(sock):
 
 def handle(s):
     lock.acquire()
-
     mazeName = getString(s)
     heuristicName = getString(s)
     path = getIntTupList(s)
     expandedNodes = getIntTupList(s)
-
-    savePath(mazeName, heuristicName, config.heuristicWeight, path, expandedNodes)
-    
+    savePath(mazeName, heuristicName, path, expandedNodes)
     s.close()
     lock.release()
 
