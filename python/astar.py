@@ -80,22 +80,22 @@ class NodeQueue:
     def pop(self):
         return heapq.heappop(self.lst)
     def contains(self, node):
-        return not ([node.state for node in self.lst].count(node.state) == 0)
+        return not node.state in [n.state for n in self.lst]
     def find(self, node):
         '''
         Returns a node that is equivalent to <node>.
         Throws ValueError if <node> not found.
         '''
-        return self.lst[[node.state for node in self.lst].index(node.state)]
+        return self.lst[[n.state for n in self.lst].index(node.state)]
     def update(self, node):
         '''
         Replaces the node in the queue that is equivalent
         to <node> with <node>
         '''
-        del self.lst[[node.state for node in self.lst].index(node.state)]
+        del self.lst[[n.state for n in self.lst].index(node.state)]
         self.push(node)
     def isEmpty(self):
-        return len(self.lst) == 0
+        return not self.lst
 
 def aStar(startNode, goalNode, environment, heuristicWeight):
 
@@ -129,7 +129,7 @@ def aStar(startNode, goalNode, environment, heuristicWeight):
         for action in world.findActions(currentNode, environment, goalNode, heuristicWeight):
 
             # Look at the neighbors that haven't been visited
-            if [node.state for node in closedList].count(action.toNode.state) == 0:
+            if action.toNode.state not in [n.state for n in closedList]:
                 neighborNode = action.toNode
 
                 # If the neighbor is in the openList, check and update if the
