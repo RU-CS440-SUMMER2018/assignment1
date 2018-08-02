@@ -71,7 +71,7 @@ These are the command-line arguments passed to the python program from c++
 
 The python program sends an **intTupPairList** representing the path
 
-#### Report Client-Server Protocol -
+#### Report Client-Server Protocol
 
 1. Client sends server an **integer** as the hueristic weight
 2. Client sends the maze name as a **string**
