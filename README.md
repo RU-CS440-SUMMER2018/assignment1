@@ -39,6 +39,47 @@ In this directory, run the following command to automate generating the report o
 
 A new terminal window will open displaying the server. Make sure you keep an eye on the server terminal window because you would need to manually close a maze when the server indicates to move onto the next maze. When all data is recieved, the server will generate a report in `$PRACSYS_PATH/report.txt` and the window will close.
 
+## Report
+
+### Results
+
+* maze10x10x10%
+  * Manhattan heuristic
+    * Weight 1
+      * Number of nodes in 10 paths: 72
+      * Number of expanded nodes in 10 paths: 126
+    * Weight 10
+      * Number of nodes in 10 paths: 74
+      * Number of expanded nodes in 10 paths: 65
+  * Zero heuristic
+    * Weight 1
+      * Number of nodes in 10 paths: 72
+      * Number of expanded nodes in 10 paths: 355
+    * Weight 10
+      * Number of nodes in 10 paths: 72
+      * Number of expanded nodes in 10 paths: 355
+* maze10x10x20%
+  * Manhattan heuristic
+    * Weight 1
+      * Number of nodes in 10 paths: 67
+      * Number of expanded nodes in 10 paths: 117
+    * Weight 10
+      * Number of nodes in 10 paths: 69
+      * Number of expanded nodes in 10 paths: 60
+  * Zero heuristic
+    * Weight 1
+      * Number of nodes in 10 paths: 67
+      * Number of expanded nodes in 10 paths: 302
+    * Weight 10
+      * Number of nodes in 10 paths: 67
+      * Number of expanded nodes in 10 paths: 302
+
+### Observations
+
+The most noticeable observation in the report is that the weight has no effect on paths that were found by the zero heuristic search. This is also intuitive given that 0 * weight will always equal 0. The zero heuristic search is basically the same as uniform cost search because they both only take the true cost from start into account which also guarantees optimality. Due to the absence of heuristics, expanding nodes had no sense of direction thus more nodes had to be expanded.
+
+The Manhattan heuristic search, especially with higher weight, expanded fewer nodes than the zero heuristic search because it had a sense of direction for which nodes to expand. A drawback of increasing the weight very high is that you loose optimality. When the h value has such a high weight, the g value is almost neglected, thus nodes in the path are selected based on a heuristic rather than the true cost. Since the Manhattan heuristic function in our world was admissible, the true cost can be greater than the heuristic value, and thus, high weight lowers optimality. Depending on your problem, expanding fewer nodes while sacrificing optimality might be what you need. In other problems, optimality cannot be sacrificed.
+
 ## Implementation
 
 We implemented an A* Search algorithim that finds an optimal path from start to goal. You can see the algorithm implemented in the `aStar()` function in `astar.py`.
