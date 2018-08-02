@@ -10,17 +10,25 @@ import threading
 import report
 import sys
 
+# Create server socket
 sock = socket.socket()
 sock.bind(('localhost', report.port))
 sock.listen(10)
 lock = threading.Lock()
 
+# Create hash to store data
 mazeDict = {}
+
+# Get input arguments
 numberOfMazes = int(sys.argv[1])
 pathsPerMaze = int(sys.argv[2])
 reportFile = sys.argv[3]
 
 def exitIfDone():
+
+    'Exit the server if all mazes have completed'
+
+    # Check if done
     lock.acquire() 
     done = False
     if len(mazeDict) == numberOfMazes:
@@ -29,6 +37,8 @@ def exitIfDone():
             if len(mazeDict[key][0]) < pathsPerMaze:
                 done = False
                 break
+    
+    # If done then write output to file and exit
     if done:
         with open(reportFile, 'w') as file:
             for key in mazeDict:
@@ -49,11 +59,30 @@ def exitIfDone():
     lock.release()
 
 def printTupList(lst, label):
+    'Nicely print a <lst> of tuples following <label>'
     for tup in lst:
         label += ' -> ' + str(tup)
     print(label + '\n')
 
 def savePath(mazeName, heuristicName, pathList, expandedNodesList):
+
+    '''
+    Save the maze path in memory.
+
+    <mazeName> is the filename of the maze.
+
+    <heuristicName> is the name of the heuristic fucntion
+    used for this path.
+
+    <pathList> is the integer tuple pair list depicting the path
+    taken.
+
+    <expandedNodesList> is the integer tuple pair list that
+    has all the expanded nodes in order.
+    '''
+
+    # Save to memory if number of path haven't
+    # been fulfilled
     key = getMazeKey(mazeName, heuristicName)
     try:
         mazeDict[key]
@@ -70,6 +99,8 @@ def savePath(mazeName, heuristicName, pathList, expandedNodesList):
         print(str(pathsCompleted) + ' paths completed')
         print(str(pathsPerMaze - pathsCompleted) + ' paths left')
         print('\n================================================\n')
+
+    # Notify on screen that enough paths have completed
     else:
         print(str(pathsCompleted) + ' paths already completed, move onto the next maze')
         numMazeCompleted = 0
@@ -80,6 +111,7 @@ def savePath(mazeName, heuristicName, pathList, expandedNodesList):
         print(str(numberOfMazes - numMazeCompleted) + ' mazes left\n')
 
 def getMazeKey(mazeName, heuristicName):
+    'Get the dict key for the maze'
     return 'Maze: ' + mazeName + '\nHeuristic: ' \
         + heuristicName + '\nWeight: ' + str(config.heuristicWeight)
 
@@ -100,6 +132,7 @@ def getIntTupList(sock):
     return lst
 
 def handle(s):
+    'Hande an accepted socket'
     lock.acquire()
     mazeName = getString(s)
     heuristicName = getString(s)
@@ -109,6 +142,7 @@ def handle(s):
     s.close()
     lock.release()
 
+# Run server aslong as more data is needed
 while True:
     exitIfDone()
     newSock = sock.accept()[0]
