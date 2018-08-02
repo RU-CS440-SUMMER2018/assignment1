@@ -53,34 +53,28 @@ To impletment our program in python and passing the data to and back from c++ to
 2. Run the python script, `$PRACSYS_PATH/python/cpp-io.py`, as a child process, passing inputs as arguments
 3. Write data to the pipe to send back computed output
 
-#### Protocol
+### Protocols
+
+#### Definitions
+
+An **integer** is a 4-byte network-byte-order integer.
+
+A **string** is a message that starts off as an **integer** that tells the length of the string to come.
+
+A **intTupPairList** is a message that starts as an **integer** that tells the number of **tuple**s that will follow. Each **tuple** is 8-bytes where the first 4-bytes represent the first **integer** in the tuple and the last 4-bytes represent the second **integer** in the tuple.
+
+#### Python-C++ Protocol
 
 These are the command-line arguments passed to the python program from c++
 
     cpp-io.py write_fd filename initial_i initial_j goal_i goal_j
 
-The python program sends back a stream of bytes that follows the following protocol:
+The python program sends an **intTupPairList** representing the path
 
-1. First 4 bytes
-    * 32-bit network-byte-order integer
-    * Represents the number of pairs that will follow
-    * Lets call this number N
-2. Next 8 bytes
-    1. First 4 bytes
-        * 32-bit network-byte-order integer
-        * Represents first integer in this pair
-    2. Second 4 bytes
-        * 32-bit network-byte-order integer
-        * Represents second integer in this pair
-3. Keep going 8 bytes N-1 more times
-    * Like #2
+#### Report Client-Server Protocol -
 
-### Report
-
-#### Protocol -
-
-4 bytes: length of maze name
-maze name
-4 bytes: length of herustic name
-heuristic name
-follow above protocol twice for path and expanded nodes
+1. Client sends server an **integer** as the hueristic weight
+2. Client sends the maze name as a **string**
+3. Client sends the hueristic function name as a **string**
+4. Client sends the path as an **intTupPairList**
+5. Client sends the expanded nodes as an **intTupPairList**
