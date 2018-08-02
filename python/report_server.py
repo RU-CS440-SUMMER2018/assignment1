@@ -4,7 +4,6 @@
 # build a report once substantial data arrives.
 
 import os
-import config
 import socket
 import threading
 import report
@@ -64,7 +63,7 @@ def printTupList(lst, label):
         label += ' -> ' + str(tup)
     print(label + '\n')
 
-def savePath(mazeName, heuristicName, pathList, expandedNodesList):
+def savePath(mazeName, heuristicName, heuristicWeight, pathList, expandedNodesList):
 
     '''
     Save the maze path in memory.
@@ -83,7 +82,7 @@ def savePath(mazeName, heuristicName, pathList, expandedNodesList):
 
     # Save to memory if number of path haven't
     # been fulfilled
-    key = getMazeKey(mazeName, heuristicName)
+    key = getMazeKey(mazeName, heuristicName, heuristicWeight)
     try:
         mazeDict[key]
     except KeyError:
@@ -110,10 +109,10 @@ def savePath(mazeName, heuristicName, pathList, expandedNodesList):
         print(str(numMazeCompleted) + ' mazes completed')
         print(str(numberOfMazes - numMazeCompleted) + ' mazes left\n')
 
-def getMazeKey(mazeName, heuristicName):
+def getMazeKey(mazeName, heuristicName, heuristicWeight):
     'Get the dict key for the maze'
     return 'Maze: ' + mazeName + '\nHeuristic: ' \
-        + heuristicName + '\nWeight: ' + str(config.heuristicWeight)
+        + heuristicName + '\nWeight: ' + str(heuristicWeight)
 
 def getString(sock):
     'Get a string from <sock> as defined by our protocol'
@@ -134,11 +133,12 @@ def getIntTupList(sock):
 def handle(s):
     'Hande an accepted socket'
     lock.acquire()
+    heuristicWeight = socket.ntohl(int.from_bytes(s.recv(4), sys.byteorder))
     mazeName = getString(s)
     heuristicName = getString(s)
     path = getIntTupList(s)
     expandedNodes = getIntTupList(s)
-    savePath(mazeName, heuristicName, path, expandedNodes)
+    savePath(mazeName, heuristicName, heuristicWeight, path, expandedNodes)
     s.close()
     lock.release()
 

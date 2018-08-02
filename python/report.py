@@ -27,6 +27,7 @@ def report(mazeFilePath, path):
     # Report only if server is online
     try:
         sock = socket.create_connection(('localhost', 8080))
+        sock.send(socket.htonl(config.heuristicWeight).to_bytes(4, sys.byteorder))
         sendString(sock, mazeFilePath)
         sendString(sock, config.heuristicFunction.__name__)
         sendIntTupList(sock, path)
