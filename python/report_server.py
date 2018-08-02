@@ -1,3 +1,8 @@
+# Creates a server that listens on port defined
+# in report.py. This server recieves information
+# from other instances of the maze program to
+# build a report once substantial data arrives.
+
 import os
 import config
 import socket
@@ -34,8 +39,10 @@ def exitIfDone():
                 for expanded in mazeDict[key][1]:
                     numExpanded += len(expanded)
                 file.write(key)
-                file.write('\nNumber of nodes in ' + str(pathsPerMaze) + ' paths: ' + str(numInPath))
-                file.write('\nNumber of expanded nodes in ' + str(pathsPerMaze) + ' paths: ' + str(numExpanded) + '\n\n')
+                file.write('\nNumber of nodes in ' + str(pathsPerMaze) \
+                    + ' paths: ' + str(numInPath))
+                file.write('\nNumber of expanded nodes in ' + str(pathsPerMaze) \
+                    + ' paths: ' + str(numExpanded) + '\n\n')
                 print('The report has been saved as: ' + reportFile)
         sock.close()
         exit()

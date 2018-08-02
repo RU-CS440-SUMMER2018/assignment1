@@ -1,3 +1,6 @@
+# Creates an abstraction: the search() fucntion is
+# similar to the plan() function in application.cpp
+
 import config
 import world
 import astar

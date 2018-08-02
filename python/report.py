@@ -1,3 +1,6 @@
+# Contains RPCs used to communicate with
+# the report server
+
 import os
 import config
 import socket

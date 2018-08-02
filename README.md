@@ -22,14 +22,6 @@ We implemented an A* Search algorithim that finds an optimal path from start to 
 
 All files and functions are well commented so you can read them to understand the code in more detail.
 
-### Organization
-
-* `cpp-io.py` has code that is ralated to communicating with c++
-* `search.py` creates an abstraction (the `search()` fucntion is similar to the `plan()` function in `application.cpp`)
-* `astar.py` has generic code that can be used to solve and any A* search problem
-* `world.py` has code specific to solving the maze in this project or world
-* `config.py` has variables that you can change to easily modify the hueristics of the maze
-
 ### Python-C++ Inter-Process Communication
 
 To impletment our program in python and passing the data to and back from c++ to python, we:
@@ -59,3 +51,13 @@ The python program sends back a stream of bytes that follows the following proto
         * Represents second integer in this pair
 3. Keep going 8 bytes N-1 more times
     * Like #2
+
+### Report
+
+#### Protocol -
+
+4 bytes: length of maze name
+maze name
+4 bytes: length of herustic name
+heuristic name
+follow above protocol twice for path and expanded nodes

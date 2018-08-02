@@ -1,3 +1,6 @@
+# Allocates variables that you can change 
+# to easily modify the hueristics of the maze
+
 import world
 
 # Set this variable to a heuristic function builder of your choice.

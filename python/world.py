@@ -1,3 +1,7 @@
+# Contains code specific to solving the maze in this 
+# project or world. This code can be midified to meet
+# specific needs of another A* Search problem.
+
 import astar
 import config
 

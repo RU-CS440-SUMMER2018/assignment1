@@ -1,3 +1,5 @@
+# Contains generic code that can be used to solve and any A* search problem
+
 import heapq
 import world
 import report

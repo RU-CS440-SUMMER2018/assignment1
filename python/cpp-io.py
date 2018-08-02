@@ -1,3 +1,6 @@
+# Code that communicates with the c++ plan() function
+# in application.cpp
+
 import socket
 import sys
 import search
