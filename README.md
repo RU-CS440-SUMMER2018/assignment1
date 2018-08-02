@@ -12,7 +12,7 @@ In this directory, run the following command
 
 ### Running a Maze
 
-Modify the heuristic values in `$PRACSYS_PATH/python/config.py` to meet your needs
+Modify the heuristic function and weight in `$PRACSYS_PATH/python/config.py` to meet your needs
 
 Now watch our program navigate any maze by running the following command
 
@@ -30,6 +30,8 @@ You can start a report server by running
 * `pathsPerMaze` are teh number of paths per maze you want to report
 * `outputFile` is the file where your report will be saved after all paths of each maze complete
 * mazes are differentiated by the file of the maze, the heuristic function used, and the hueristic weight used
+
+The default port is 8080, if you want to use another port, change the value of `port` in `$PRACSYS_PATH/python/report.py`
 
 In this directory, run the following command to automate generating the report outlined in the assignment:
 
@@ -53,6 +55,25 @@ To impletment our program in python and passing the data to and back from c++ to
 2. Run the python script, `$PRACSYS_PATH/python/cpp-io.py`, as a child process, passing inputs as arguments
 3. Write data to the pipe to send back computed output
 
+### Report Generator Client-Server Communication
+
+To store report data over multiple instances of our A* search porgram, we had to create a server that stays alive during execution of the multiple instances.
+
+The client:
+
+1. After completing the search tries to connect to the server
+2. If the server is running send the data to the server
+3. If the server is not running, don't report the data
+
+The server:
+
+1. Accepts a connection from a socket
+2. Recieves data from client
+3. Organizes data in data structure
+4. Keeps accepting connections as long as it needs more data
+5. Saves data to file once all data has been recieved
+6. Exits
+
 ### Protocols
 
 #### Definitions
@@ -71,7 +92,7 @@ These are the command-line arguments passed to the python program from c++
 
 The python program sends an **intTupPairList** representing the path
 
-#### Report Client-Server Protocol
+#### Report Generator Client-Server Protocol
 
 1. Client sends server an **integer** as the hueristic weight
 2. Client sends the maze name as a **string**
