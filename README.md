@@ -2,17 +2,40 @@
 
 ## Usage
 
-1. Carefully follow [Rahul Shome's instructions](https://bitbucket.org/rahulshome/cs_440_assignment/wiki/Home)
-2. In this directory, run the following command
-    ```bash
+### Setup
+
+Carefully follow [Rahul Shome's instructions](https://bitbucket.org/rahulshome/cs_440_assignment/wiki/Home)
+
+In this directory, run the following command
+
     chmod 755 setup.sh && ./setup.sh
-    ```
-3. Modify the heuristic values in `$PRACSYS_PATH/python/config.py` to meet your needs
-4. Now watch our program navigate any maze by running the following command
-    ```bash
+
+### Running a Maze
+
+Modify the heuristic values in `$PRACSYS_PATH/python/config.py` to meet your needs
+
+Now watch our program navigate any maze by running the following command
+
     roslaunch prx_core assignment_1.launch env:="PATH_TO_MAZE_FILE"
-    ```
-    * PATH_TO_MAZE_FILE must point to a file that follows the maze format outlined in this assignment
+
+* PATH_TO_MAZE_FILE must point to a file that follows the maze format outlined in this assignment
+
+### Generate a Report
+
+You can start a report server by running
+
+    python3 $PRACSYS_PATH/python/report_server.py numMazes pathsPerMaze outputFile
+
+* `numMazes` is the number of mazes you want to report
+* `pathsPerMaze` are teh number of paths per maze you want to report
+* `outputFile` is the file where your report will be saved after all paths of each maze complete
+* mazes are differentiated by the file of the maze, the heuristic function used, and the hueristic weight used
+
+In this directory, run the following command to automate generating the report outlined in the assignment:
+
+    chmod 755 report.sh && ./report.sh
+
+A new terminal window will open displaying the server. Make sure you keep an eye on the server terminal window because you would need to manually close a maze when the server indicates to move onto the next maze. When all data is recieved, the server will generate a report in `$PRACSYS_PATH/report.txt` and the window will close.
 
 ## Implementation
 
