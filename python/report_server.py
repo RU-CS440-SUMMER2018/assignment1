@@ -9,20 +9,6 @@ import threading
 import report
 import sys
 
-# Create server socket
-sock = socket.socket()
-sock.bind(('localhost', report.port))
-sock.listen(10)
-lock = threading.Lock()
-
-# Create hash to store data
-mazeDict = {}
-
-# Get input arguments
-numberOfMazes = int(sys.argv[1])
-pathsPerMaze = int(sys.argv[2])
-reportFile = sys.argv[3]
-
 def exitIfDone():
 
     'Exit the server if all mazes have completed'
@@ -142,9 +128,25 @@ def handle(s):
     s.close()
     lock.release()
 
-# Run server aslong as more data is needed
-while True:
-    exitIfDone()
-    newSock = sock.accept()[0]
-    thread = threading.Thread(target=handle, args=(newSock,))
-    thread.start()
+if __name__ == '__main__':
+
+    # Create hash to store data
+    mazeDict = {}
+
+    # Create server socket
+    sock = socket.socket()
+    sock.bind(('localhost', report.port))
+    sock.listen(10)
+    lock = threading.Lock()
+
+    # Get input arguments
+    numberOfMazes = int(sys.argv[1])
+    pathsPerMaze = int(sys.argv[2])
+    reportFile = sys.argv[3]
+
+    # Run server aslong as more data is needed
+    while True:
+        exitIfDone()
+        newSock = sock.accept()[0]
+        thread = threading.Thread(target=handle, args=(newSock,))
+        thread.start()
