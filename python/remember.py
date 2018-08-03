@@ -1,6 +1,6 @@
 # This file contains code used for storing
 # visited paths and using this data to not
-# recompute paths.
+# recompute paths. Has server and client code.
 
 import threading
 import socket
@@ -21,8 +21,10 @@ def savePath(path):
     For server.
     '''
 
+    # Save the path
     paths.append(path)
 
+    # Let user know path is saved
     print('Recorded paths:')
     for i in range(len(paths)):
         report_server.printTupList(paths[i], 'Path ' + str(i+1))
@@ -41,12 +43,22 @@ def findPath(startTup, goalTup):
     For server
     '''
 
+    # Loops through paths
     for path in paths:
+
+        # If both the goal and start are in a path
+        # this is the one we need
         if startTup in path and goalTup in path:
+
+            # Get indexs of tuples
             startIndex = path.index(startTup)
             goalIndex = path.index(goalTup)
+
+            # If goal index is larger, return the split list
             if goalIndex >= startIndex:
                 return path[startIndex:goalIndex+1]
+
+            # If start is larger, return the reversed split list
             else:
                 reversedPath = path[goalIndex:startIndex+1]
                 reversedPath.reverse()
@@ -64,14 +76,14 @@ def sendStartGoal(s, start, goal):
 
 def sendTup(s, tup):
     '''
-    sends the int tuple tup through socket s
+    Sends the int tuple tup through socket s
     '''
     sendInt(s, tup[0])
     sendInt(s, tup[1])
 
 def getTup(s):
     '''
-    returns an int tuple from socket s
+    Returns an int tuple from socket s
     '''
     i = getInt(s)
     j = getInt(s)
@@ -79,9 +91,7 @@ def getTup(s):
 
 def handle(s):
     '''
-    handles an accepted socket.
-
-    for server.
+    Handles an accepted socket. For server.
     '''
     if getBool(s):
         lst = report_server.getIntTupList(s)
@@ -102,14 +112,13 @@ def handle(s):
 def getPath(startTup, goalTup):
 
     '''
-    for client
+    For client
     
-    gets path from startTup to goalTup
+    Gets path from startTup to goalTup
     where both of them are integer pair tuples
 
-    returns path if found, else return None
-
-    also returns None if server offline
+    Returns path if found, else return None.
+    Also returns None if server offline
     '''
 
     try: 
@@ -130,9 +139,9 @@ def getPath(startTup, goalTup):
 
 def sendPath(path):
     '''
-    sends an integer tuple list to the server
+    Sends an integer tuple list to the server
 
-    this is for the client
+    This is for the client
     '''
     try:
         s = socket.socket()
@@ -145,19 +154,19 @@ def sendPath(path):
 
 def sendInt(s, num):
     '''
-    sends a the integer num through s
+    Sends a the integer num through s
     '''
     s.send(socket.htonl(num).to_bytes(4, sys.byteorder))
 
 def getInt(s):
     '''
-    return an integer from s
+    Return an integer from s
     '''
     return socket.ntohl(int.from_bytes(s.recv(4), sys.byteorder))
 
 def sendBool(s, bool):
     '''
-    send boolean bool through s
+    Send boolean bool through s
     '''
     if bool:
         s.send(b's')
@@ -166,7 +175,7 @@ def sendBool(s, bool):
 
 def getBool(s):
     '''
-    get boolean from s
+    Get boolean from s
     '''
     data = s.recv(1)
     if data == b's':
