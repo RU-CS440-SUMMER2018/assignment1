@@ -27,9 +27,9 @@ You can start a report server by running
     python3 $PRACSYS_PATH/python/report_server.py numMazes pathsPerMaze outputFile
 
 * `numMazes` is the number of mazes you want to report
-* `pathsPerMaze` are teh number of paths per maze you want to report
+* `pathsPerMaze` is the number of paths per maze you want to report
 * `outputFile` is the file where your report will be saved after all paths of each maze complete
-* mazes are differentiated by the file of the maze, the heuristic function used, and the hueristic weight used
+* mazes are differentiated by the file of the maze, the heuristic function used, and the heuristic weight used
 
 The default port is 8080, if you want to use another port, change the value of `port` in `$PRACSYS_PATH/python/report.py`
 
@@ -37,7 +37,7 @@ In this directory, run the following command to automate generating the report o
 
     chmod 755 report.sh && ./report.sh
 
-A new terminal window will open displaying the server. Make sure you keep an eye on the server terminal window because you would need to manually close a maze when the server indicates to move onto the next maze. When all data is recieved, the server will generate a report in `$PRACSYS_PATH/report.txt` and the window will close.
+A new terminal window will open displaying the server. Make sure you keep an eye on the server terminal window because you would need to manually close a maze when the server indicates to move onto the next maze. When all data is received, the server will generate a report in `$PRACSYS_PATH/report.txt` and the window will close.
 
 ## Report
 
@@ -82,7 +82,7 @@ The Manhattan heuristic search, especially with higher weight, expanded fewer no
 
 ## Implementation
 
-We implemented an A* Search algorithim that finds an optimal path from start to goal. You can see the algorithm implemented in the `aStar()` function in `astar.py`.
+We implemented an A* Search algorithm that finds an optimal path from start to goal. You can see the algorithm implemented in the `aStar()` function in `astar.py`.
 
 `cpp-io.py` calls `search()` in `search.py` passing in appropriate arguments it got from the c++ program. `cpp-io.py` translates and sends `search()`'s return value back to the c++ program. `search()` defines the start and goal nodes, gets the enviornment from the file, calls `aStar()`, and constructs a path list from `aStar()`'s return value.
 
@@ -90,7 +90,7 @@ All files and functions are well commented so you can read them to understand th
 
 ### Python-C++ Inter-Process Communication
 
-To impletment our program in python and passing the data to and back from c++ to python, we:
+To implement our program in python and passing the data to and back from c++ to python, we:
 
 1. Create a pipe in c++
 2. Run the python script, `$PRACSYS_PATH/python/cpp-io.py`, as a child process, passing inputs as arguments
@@ -98,7 +98,7 @@ To impletment our program in python and passing the data to and back from c++ to
 
 ### Report Generator Client-Server Communication
 
-To store report data over multiple instances of our A* search porgram, we had to create a server that stays alive during execution of the multiple instances.
+To store report data over multiple instances of our A* search program, we had to create a server that stays alive during execution of the multiple instances.
 
 The client:
 
@@ -109,10 +109,10 @@ The client:
 The server:
 
 1. Accepts a connection from a socket
-2. Recieves data from client
-3. Organizes data in data structure
+2. Receives data from the client
+3. Organizes data in a data structure
 4. Keeps accepting connections as long as it needs more data
-5. Saves data to file once all data has been recieved
+5. Saves data to file once all data has been received
 6. Exits
 
 ### Protocols
@@ -135,24 +135,24 @@ The python program sends an **intTupPairList** representing the path
 
 #### Report Generator Client-Server Protocol
 
-1. Client sends server an **integer** as the hueristic weight
+1. Client sends server an **integer** as the heuristic weight
 2. Client sends the maze name as a **string**
-3. Client sends the hueristic function name as a **string**
+3. Client sends the heuristic function name as a **string**
 4. Client sends the path as an **intTupPairList**
 5. Client sends the expanded nodes as an **intTupPairList**
 
-## Extra Cedit
+## Extra Credit
 
 To reuse information between repeated, chained searches in the same environment run the following before starting running a maze:
 
     python3 $PRACSYS_PATH/python/remember.py
 
-This will not work for multiple enviornments. You must exit the server before running another maze.
+This will not work for multiple environments. You must exit the server before running another maze.
 
 ### Extra Credit Implementation
 
 1. Store paths in a list
 2. Search path list that contains start and goal nodes
-3. Create new path using the found path
+3. Create a new path using the found path
 
 Our implementation is in `remember.py` and is called by `search.py`
