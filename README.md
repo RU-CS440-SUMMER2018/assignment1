@@ -156,3 +156,10 @@ This will not work for multiple environments. You must exit the server before ru
 3. Create a new path using the found path
 
 Our implementation is in `remember.py` and is called by `search.py`
+
+## Credits
+
+* Ammaar Muhammad Iqbal (ami76)
+* Maury Johnson (mlj92)
+* Shaan Kalola (spk103)
+* Michael Parrilla (map565)
