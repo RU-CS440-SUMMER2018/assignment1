@@ -5,6 +5,7 @@ import config
 import world
 import astar
 import report
+import remember
 
 def search(filename, initial_i, initial_j, goal_i, goal_j):
 
@@ -19,34 +20,39 @@ def search(filename, initial_i, initial_j, goal_i, goal_j):
     optimal path from the start state to the goal.
     '''
 
-    # Define the start and goal node
-    startState = world.State(initial_i, initial_j)
-    goalState = world.State(goal_i, goal_j)
-    startNode = astar.Node(startState, config.heuristicWeight)
-    goalNode = astar.Node(goalState, config.heuristicWeight)
-    startNode.heuristicFucntion = goalNode.heuristicFucntion = config.heuristicFunction(goalNode)
+    # If path was not already computed, compute
+    retList = remember.getPath((initial_i, initial_j), (goal_i, goal_j))
+    if not retList:
 
-    # Get environment from file
-    environment = readMaze(filename)
+        # Define the start and goal node
+        startState = world.State(initial_i, initial_j)
+        goalState = world.State(goal_i, goal_j)
+        startNode = astar.Node(startState, config.heuristicWeight)
+        goalNode = astar.Node(goalState, config.heuristicWeight)
+        startNode.heuristicFucntion = goalNode.heuristicFucntion = config.heuristicFunction(goalNode)
 
-    # Perform A* search
-    foundGoal = astar.aStar(startNode, goalNode, environment, config.heuristicWeight)
-    
-    # Construct the path
-    retList = []
-    while foundGoal:
-        fromAction = foundGoal.fromAction
-        i = foundGoal.state.i
-        j = foundGoal.state.j
-        retList.append((i,j))
-        if fromAction:
-            foundGoal = fromAction.fromNode
-        else:
-            foundGoal = None
-    retList.reverse()
+        # Get environment from file
+        environment = readMaze(filename)
 
-    # Report the path
-    report.report(filename, retList)
+        # Perform A* search
+        foundGoal = astar.aStar(startNode, goalNode, environment, config.heuristicWeight)
+        
+        # Construct the path
+        retList = []
+        while foundGoal:
+            fromAction = foundGoal.fromAction
+            i = foundGoal.state.i
+            j = foundGoal.state.j
+            retList.append((i,j))
+            if fromAction:
+                foundGoal = fromAction.fromNode
+            else:
+                foundGoal = None
+        retList.reverse()
+
+        # Save the path
+        report.report(filename, retList)
+        remember.sendPath(retList)
 
     return retList
 

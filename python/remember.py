@@ -83,6 +83,7 @@ def handle(s):
     s.close()
 
 def getPath(startTup, goalTup):
+
     '''
     for client
     
@@ -90,17 +91,24 @@ def getPath(startTup, goalTup):
     where both of them are integer pair tuples
 
     returns path if found, else return None
+
+    also returns None if server offline
     '''
-    s = socket.socket()
-    s.connect(('localhost', port))
-    sendBool(s, False)
-    sendStartGoal(s, startTup, goalTup)
-    if getBool(s):
-        path = report_server.getIntTupList(s)
-        s.close()
-        return path
-    else:
-        s.close()
+
+    try: 
+        s = socket.socket()
+        s.connect(('localhost', port))
+        sendBool(s, False)
+        sendStartGoal(s, startTup, goalTup)
+        if getBool(s):
+            path = report_server.getIntTupList(s)
+            s.close()
+            return path
+        else:
+            s.close()
+            return None
+
+    except ConnectionRefusedError:
         return None
 
 def sendPath(path):
@@ -109,11 +117,14 @@ def sendPath(path):
 
     this is for the client
     '''
-    s = socket.socket()
-    s.connect(('localhost', port))
-    sendBool(s, True)
-    report.sendIntTupList(s, path)
-    s.close()
+    try:
+        s = socket.socket()
+        s.connect(('localhost', port))
+        sendBool(s, True)
+        report.sendIntTupList(s, path)
+        s.close()
+    except ConnectionRefusedError:
+        pass
 
 def sendInt(s, num):
     '''
