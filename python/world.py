@@ -10,6 +10,8 @@ class State:
     def __init__(self, i, j):
         self.i = i
         self.j = j
+    def getTup(self):
+        return (self.i, self.j)
     def __eq__(self, other):
         return (self.i == other.i) and (self.j == other.j)
     def __str__(self):
