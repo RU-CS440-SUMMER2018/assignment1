@@ -1,3 +1,7 @@
+# This file contains code used for storing
+# visited paths and using this data to not
+# recompute paths.
+
 import threading
 import socket
 import sys
@@ -7,13 +11,22 @@ import report
 port = 8081
 
 def savePath(path):
+
     '''
     Saves path to memory.
 
     path is list of integer pair tuples
     that represetns a path.
+
+    For server.
     '''
+
     paths.append(path)
+
+    print('Recorded paths:')
+    for i in range(len(paths)):
+        report_server.printTupList(paths[i], 'Path ' + str(i+1))
+    print('\n')
 
 def findPath(startTup, goalTup):
 
@@ -24,6 +37,8 @@ def findPath(startTup, goalTup):
 
     startTup and goalTup are integer tuple pairs
     representing coordinates.
+
+    For server
     '''
 
     for path in paths:
@@ -78,6 +93,8 @@ def handle(s):
         if path:
             sendBool(s, True)
             report.sendIntTupList(s, path)
+            report_server.printTupList(path, 'Path found and sent')
+            print('\n')
         else:
             sendBool(s, False)
     s.close()
