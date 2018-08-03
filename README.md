@@ -140,3 +140,19 @@ The python program sends an **intTupPairList** representing the path
 3. Client sends the hueristic function name as a **string**
 4. Client sends the path as an **intTupPairList**
 5. Client sends the expanded nodes as an **intTupPairList**
+
+## Extra Cedit
+
+To reuse information between repeated, chained searches in the same environment run the following before starting running a maze:
+
+    python3 $PRACSYS_PATH/python/remember.py
+
+This will not work for multiple enviornments. You must exit the server before running another maze.
+
+### Extra Credit Implementation
+
+1. Store paths in a list
+2. Search path list that contains start and goal nodes
+3. Create new path using the found path
+
+Our implementation is in `remember.py` and is called by `search.py`
