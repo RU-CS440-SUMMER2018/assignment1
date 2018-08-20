@@ -1,0 +1,3 @@
+import world
+heuristicFunction = world.zeroHeuristic
+heuristicWeight = 1

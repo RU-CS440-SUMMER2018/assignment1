@@ -30,6 +30,10 @@
 
 #include <iostream>
 
+// Includes for python-io
+#include <netinet/in.h>
+#include <sys/wait.h>
+
 PLUGINLIB_EXPORT_CLASS(prx::util::util_application_t, prx::util::util_application_t)
 
 namespace prx
@@ -308,47 +312,77 @@ namespace prx
             }
         }
 
-        std::vector< std::pair<int, int> > util_application_t::plan(int initial_i, int initial_j, int goal_i, int goal_j )
-        {
-            //Input: initial coordinates in maze 2D array: (initial_i, initial_j)
-            //       goal coordinates in maze 2D array: (goal_i, goal_j)
-            //Return value is a sequence of maze coordinates starting at the initial coordinate and ending at the goal.
+        std::vector< std::pair<int, int> > util_application_t::plan(int initial_i, int initial_j, int goal_i, int goal_j ) {
 
-            //Returned vector of coordinates.
-            std::vector< std::pair<int, int> > path;
+            std::vector< std::pair<int,int> > path;
+
+            // Create pipe
+            int pyPipe[2];
+            if (pipe(pyPipe)) {
+                perror("Error creating pipe");
+            }
+            int readFd = pyPipe[0];
+            int writeFd = pyPipe[1];
             
+            if(fork()) {
+                
+                // Close writeFd for c++
+                close(writeFd);
 
-            // Naive generation of path that has not awareness of the environment
-            //################COMMENT OUT THE FOLLOWING BLOCK OF CODE TO POPULATE path##################
-            for(int i=initial_i; i<=goal_i; ++i)                                      //################
-                path.push_back(std::make_pair(i,initial_j));                          //################            
-            for(int i=initial_i; i>=goal_i; --i)                                      //################
-                path.push_back(std::make_pair(i,initial_j));                          //################            
-            for(int j=initial_j+1; j<=goal_j; ++j)                                    //################
-                path.push_back(std::make_pair(goal_i,j));                             //################        
-            for(int j=initial_j-1; j>=goal_j; --j)                                    //################
-                path.push_back(std::make_pair(goal_i,j));                             //################ 
-            //If using C++, you can choose to populate the following function in search.cpp 
-            //path = searcher->search();           
-            //################THE PRECEDING CODE SHOULD BE REPLACED BY YOUR SOLUTION####################
+                // Get number of pairs
+                unsigned int numPairs;
+                read(readFd, &numPairs, 4);
+                numPairs = ntohl(numPairs);
 
-            //You can invoke your code using an std::system call, or write your code in C++ and include it here, or invoke your code through ROS
-            //Global variable environment_file has the path to the maze file
-            //###############################################################
-            //###############################################################
-            //###############################################################
-            //###############################################################
-            //#########################ASSIGNMENT 1##########################
-            //###############################################################
-            //###############################################################
-            //###############################################################
-            //###############################################################
+                // Fill path vector
+                for (unsigned int i = 0; i < numPairs; i++) {
+                    std::pair<int,int> tuple;
+                    read(readFd, &tuple.first, 4);
+                    read(readFd, &tuple.second, 4);
+                    tuple.first = ntohl(tuple.first);
+                    tuple.second = ntohl(tuple.second);
+                    path.push_back(tuple);
+                }
 
+                // Clean up
+                close(readFd);
+                wait(NULL);
 
+            } else {
 
-            //Once a path has been reconstructed it is returned
+                // Close readFd for python
+                close(readFd);
+
+                // Create argument strings
+                char mainPyPath[PATH_MAX];
+                sprintf(mainPyPath, "%s/python/cpp-io.py", getenv("PRACSYS_PATH"));
+                char portStr[10];
+                sprintf(portStr, "%d", writeFd);
+                char iiStr[10];
+                sprintf(iiStr, "%d", initial_i);
+                char ijStr[10];
+                sprintf(ijStr, "%d", initial_j);
+                char giStr[10];
+                sprintf(giStr, "%d", goal_i);
+                char gjStr[10];
+                sprintf(gjStr, "%d", goal_j);
+
+                // Run python script
+                execl(
+                    "/usr/bin/python3",
+                    "python3",
+                    mainPyPath,
+                    portStr,
+                    environment_file.c_str(),
+                    iiStr,
+                    ijStr,
+                    giStr,
+                    gjStr,
+                    NULL
+                );
+            }
+            
             return path;
         }
-
     }
 }
